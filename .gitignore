@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+*build-nori*
+*.log
+*.user
+*.pdf
+*.exr

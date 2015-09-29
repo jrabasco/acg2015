@@ -1,0 +1,25 @@
+\documentclass{article}
+
+\title{Advanced Computer Graphics\\Homework 2}
+\author{Phil\'emon Favrod \and Solal Pirelli \and J\'er\'emy Rabasco}
+\usepackage{amsmath}
+
+\begin{document}
+
+\maketitle
+
+\section{Question 2.2.3}
+In this answer, we will assume the following:
+\begin{itemize}
+\item Floating point numbers are actually considered as real numbers; and
+\item \textit{drand48()} is a perfect uniform random generator in the interval $[0, 1]$.
+\end{itemize}
+The probability that the loop ends at a given iteration is the probability that a randomly selected point inside a cube with edges of length two is contained inside the upper hemisphere of the inscribed unit sphere. Therefore, it can be computed as
+$$
+\frac{V_{\text{Hemisphere}}}{V_{\text{Cube}}} = \frac{V_{\text{Sphere}}}{2V_{\text{Cube}}} = \frac{\frac{4}{3}\pi}{2^4} = \frac{\pi}{12} \approx 0.2618. 
+$$
+
+We are now wondering the expected value of a random variable following a Geometric distribution with probability of success being $p = \frac{\pi}{12}$. Therefore,
+the expected number of iterations is $\frac 1p = \frac{12}{\pi} \approx 3.8197$.
+
+\end{document}
