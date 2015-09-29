@@ -1,14 +1,16 @@
 \documentclass{article}
 
-\title{Advanced Computer Graphics\\Homework 2}
+\title{Advanced Computer Graphics\\Exercise 2}
 \author{Phil\'emon Favrod \and Solal Pirelli \and J\'er\'emy Rabasco}
 \usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
 
 \begin{document}
 
 \maketitle
 
-\section{Question 2.2.3}
+\section*{Question 2.2.3}
 In this answer, we will assume the following:
 \begin{itemize}
 \item Floating point numbers are actually considered as real numbers; and
@@ -22,4 +24,28 @@ $$
 We are now wondering the expected value of a random variable following a Geometric distribution with probability of success being $p = \frac{\pi}{12}$. Therefore,
 the expected number of iterations is $\frac 1p = \frac{12}{\pi} \approx 3.8197$.
 
+\section*{Question 2.3.1}
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[thick, scale=1.4]
+% base circle
+\draw (0,0) arc (180:360:4 and 1);
+\draw [dashed] (0,0) arc (180:0:4 and 1);
+
+% hemisphere
+\draw (0,0) arc (180:0:4 and 4);
+\draw (2,-.85) arc (180:90:2 and 4.85);
+
+% axes
+\draw [->, gray] (4,0,0) -- ++(-5,0,0)node[anchor=east]{$x$};
+\draw [->, gray] (4,0,0) -- ++(0,-2.5,-2.5)node[anchor=north]{$y$};
+\draw [<-, gray] (4,5)node[anchor=south]{$z$} -- (4, 0);
+
+% schema
+\draw [dashed] (4,0) -- (2.9,-0.5)node[anchor=north, yshift=0.1cm] {$(\sqrt{\xi_1}, 2\pi\xi_2, 0)$};
+\draw [dashed] (2.9, -0.5) -- (2.9, 3.19)node[anchor=south] {$p$} -- (4,0);
+\draw [decorate,decoration={brace,amplitude=5pt},xshift=4pt,yshift=1pt]
+(2.9, 3.19) -- (4,0) node [black,midway,xshift=0.65cm, yshift=0.15cm]{$= 1$};
+\end{tikzpicture}
+\end{figure}
 \end{document}
