@@ -13,6 +13,7 @@
 #include "hemisampling.cpp"
 #include <stdlib.h>
 #include <time.h>
+#include <cfloat>
 
 NORI_NAMESPACE_BEGIN
 
@@ -79,8 +80,12 @@ public:
         float diffuseTerm = Frame::cosTheta(bRec.wo)/M_PI;
         float specularTerm = (m_exp + 1.0f) * powf(cosf(alpha), m_exp) / (2.0f * M_PI);
 
-        return kd * diffuseTerm + ks * specularTerm;
-    }
+        float result = (kd * diffuseTerm + ks * specularTerm)/(kd + ks);
+        if (result == 0) {
+            return FLT_MIN;
+        }
+        return result;
+     }
 
     /// Draw a a sample from the BRDF model
 
@@ -101,11 +106,25 @@ public:
 
         bRec.measure = ESolidAngle;
         bRec.eta = 1.0f; // no change in relative index
+        float theta;
+        float phi = 2.0f * M_PI * sample.y();
+        if (useSpecular) {
+            float exponent = 1.0f/(m_exp+1.0f);
+            theta = -acosf(Frame::cosTheta(bRec.wi)) + acosf(powf(sample.x(), exponent));
+        } else {
+            theta = acosf(sqrtf(sample.x()));
+        }
+        float x = sinf(theta) * cosf(phi);
+        float y = sinf(theta) * sinf(phi);
+        float z = cosf(theta);
+        bRec.wo = Vector3f(x, y, z); // this is utterly wrong!
 
-        // TODO implement phong importance sampling
-        bRec.wo = Vector3f(0.0f, 0.0f, 1.0f); // this is utterly wrong!
-
-        return Color3f(0.0f) * Frame::cosTheta(bRec.wo);
+        Color3f brdf = eval(bRec);
+        float pdf_val = pdf(bRec);
+        if (pdf_val <= 0) {
+                         std::cout << "SHIIIIIIIIIIIIIIIT " << pdf_val << std::endl;
+                         }
+        return Color3f(brdf.getLuminance()/pdf_val) * Frame::cosTheta(bRec.wo);
     }
 
     /// Return a human-readable summary
