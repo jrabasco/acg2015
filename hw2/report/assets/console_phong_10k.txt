@@ -1,0 +1,1025 @@
+Starting /home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori...
+constructing  "directional" 
+constructing  "independent" 
+Using default version (0)
+Loading "meshes/sphere.obj" ..
+Read 768 triangles and 441 vertices.
+Loading "meshes/sphere.obj" ..
+constructing  "perspective" 
+constructing  "gaussian" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+Read 768 triangles and 441 vertices.
+Loading "meshes/plate1.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate2.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate3.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate4.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/floor.obj" ..
+Read 4 triangles and 12 vertices.
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "variance" 
+Reading a 768x512 OpenEXR file from "phong-ref.exr"
+constructing  "scene" 
+Constructing a SAH kd-tree (1548 triangles, 4 threads) ..
+Finished after 5 ms (used 2048 KiB of temp. memory)
+The final kd-tree requires 32 KiB of memory
+
+Configuration: Scene[
+  integrator = DirectionalIntegrator[],
+  sampler = Independent[sampleCount=64]
+  camera = PerspectiveCamera[
+    cameraToWorld = [ 0.9578,       0,       0,       0;
+                           0,  0.9174, -0.2873,       6;
+                           0, -0.2752, -0.9578,    27.5;
+                           0,       0,       0,       1],
+    outputSize = [768, 512],
+    fov = 25,
+    apertureRadius = 0,
+    focusDistance = 10000,
+    clip = [0.0001, 10000],
+    rfilter = GaussianFilter[radius=2, stddev=0.5]
+  ],
+  medium = null,
+  envLuminaire = null,
+  meshes = {
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.941176, 6.39216, 10]]
+    ],
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.219608, 0.709804, 0.333333]]
+    ],
+    Mesh[
+      name = "plate1.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 2
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate2.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 20
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate3.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 50
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate4.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 100
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "floor.obj",
+      vertexCount = 12,
+      triangleCount = 4,
+      bsdf = Diffuse[
+        albedo = [0.4, 0.4, 0.4]
+      ],
+      luminaire = null
+    ]
+  },
+  evaluator = Variance[ reference = phong-ref.exr ]
+]
+
+Rendering finished (took 10665 ms)
+
+
+Variance:
+	Red  = 0.000109136
+	Green = 0.001935
+	Blue = 0.000964692
+
+Stddev:
+	Red  = 0.0104468
+	Green = 0.0439887
+	Blue = 0.0310595
+
+Writing a 768x512 OpenEXR file to "./phong-brdf.exr"
+/home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori exited with code 0
+
+Starting /home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori...
+constructing  "directional" 
+constructing  "independent" 
+Using default version (0)
+Loading "meshes/sphere.obj" ..
+Read 768 triangles and 441 vertices.
+Loading "meshes/sphere.obj" ..
+constructing  "perspective" 
+constructing  "gaussian" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+Read 768 triangles and 441 vertices.
+Loading "meshes/plate1.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate2.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate3.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate4.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/floor.obj" ..
+Read 4 triangles and 12 vertices.
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "variance" 
+Reading a 768x512 OpenEXR file from "phong-ref.exr"
+constructing  "scene" 
+Constructing a SAH kd-tree (1548 triangles, 4 threads) ..
+Finished after 6 ms (used 2048 KiB of temp. memory)
+The final kd-tree requires 32 KiB of memory
+
+Configuration: Scene[
+  integrator = DirectionalIntegrator[],
+  sampler = Independent[sampleCount=64]
+  camera = PerspectiveCamera[
+    cameraToWorld = [ 0.9578,       0,       0,       0;
+                           0,  0.9174, -0.2873,       6;
+                           0, -0.2752, -0.9578,    27.5;
+                           0,       0,       0,       1],
+    outputSize = [768, 512],
+    fov = 25,
+    apertureRadius = 0,
+    focusDistance = 10000,
+    clip = [0.0001, 10000],
+    rfilter = GaussianFilter[radius=2, stddev=0.5]
+  ],
+  medium = null,
+  envLuminaire = null,
+  meshes = {
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.941176, 6.39216, 10]]
+    ],
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.219608, 0.709804, 0.333333]]
+    ],
+    Mesh[
+      name = "plate1.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 2
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate2.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 20
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate3.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 50
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate4.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 100
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "floor.obj",
+      vertexCount = 12,
+      triangleCount = 4,
+      bsdf = Diffuse[
+        albedo = [0.4, 0.4, 0.4]
+      ],
+      luminaire = null
+    ]
+  },
+  evaluator = Variance[ reference = phong-ref.exr ]
+]
+
+Rendering finished (took 11169 ms)
+
+
+Variance:
+	Red  = 1.83752e-05
+	Green = 8.84111e-05
+	Blue = 0.000157281
+
+Stddev:
+	Red  = 0.00428663
+	Green = 0.00940272
+	Blue = 0.0125412
+
+Writing a 768x512 OpenEXR file to "./phong-brdf.exr"
+/home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori exited with code 0
+
+Starting /home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori...
+constructing  "directional" 
+constructing  "independent" 
+Using default version (0)
+Loading "meshes/sphere.obj" ..
+Read 768 triangles and 441 vertices.
+Loading "meshes/sphere.obj" ..
+constructing  "perspective" 
+constructing  "gaussian" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+Read 768 triangles and 441 vertices.
+Loading "meshes/plate1.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate2.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate3.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate4.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/floor.obj" ..
+Read 4 triangles and 12 vertices.
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "variance" 
+Reading a 768x512 OpenEXR file from "phong-ref.exr"
+constructing  "scene" 
+Constructing a SAH kd-tree (1548 triangles, 4 threads) ..
+Finished after 5 ms (used 2048 KiB of temp. memory)
+The final kd-tree requires 32 KiB of memory
+
+Configuration: Scene[
+  integrator = DirectionalIntegrator[],
+  sampler = Independent[sampleCount=4096]
+  camera = PerspectiveCamera[
+    cameraToWorld = [ 0.9578,       0,       0,       0;
+                           0,  0.9174, -0.2873,       6;
+                           0, -0.2752, -0.9578,    27.5;
+                           0,       0,       0,       1],
+    outputSize = [768, 512],
+    fov = 25,
+    apertureRadius = 0,
+    focusDistance = 10000,
+    clip = [0.0001, 10000],
+    rfilter = GaussianFilter[radius=2, stddev=0.5]
+  ],
+  medium = null,
+  envLuminaire = null,
+  meshes = {
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.941176, 6.39216, 10]]
+    ],
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.219608, 0.709804, 0.333333]]
+    ],
+    Mesh[
+      name = "plate1.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 2
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate2.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 20
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate3.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 50
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate4.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 100
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "floor.obj",
+      vertexCount = 12,
+      triangleCount = 4,
+      bsdf = Diffuse[
+        albedo = [0.4, 0.4, 0.4]
+      ],
+      luminaire = null
+    ]
+  },
+  evaluator = Variance[ reference = phong-ref.exr ]
+]
+
+The program has unexpectedly finished.
+/home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori crashed
+
+Starting /home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori...
+constructing  "directional" 
+constructing  "independent" 
+Using default version (0)
+Loading "meshes/sphere.obj" ..
+Read 768 triangles and 441 vertices.
+Loading "meshes/sphere.obj" ..
+constructing  "perspective" 
+constructing  "gaussian" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+Read 768 triangles and 441 vertices.
+Loading "meshes/plate1.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate2.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate3.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate4.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/floor.obj" ..
+Read 4 triangles and 12 vertices.
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "variance" 
+Reading a 768x512 OpenEXR file from "phong-ref.exr"
+constructing  "scene" 
+Constructing a SAH kd-tree (1548 triangles, 4 threads) ..
+Finished after 6 ms (used 2048 KiB of temp. memory)
+The final kd-tree requires 32 KiB of memory
+
+Configuration: Scene[
+  integrator = DirectionalIntegrator[],
+  sampler = Independent[sampleCount=4096]
+  camera = PerspectiveCamera[
+    cameraToWorld = [ 0.9578,       0,       0,       0;
+                           0,  0.9174, -0.2873,       6;
+                           0, -0.2752, -0.9578,    27.5;
+                           0,       0,       0,       1],
+    outputSize = [768, 512],
+    fov = 25,
+    apertureRadius = 0,
+    focusDistance = 10000,
+    clip = [0.0001, 10000],
+    rfilter = GaussianFilter[radius=2, stddev=0.5]
+  ],
+  medium = null,
+  envLuminaire = null,
+  meshes = {
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.941176, 6.39216, 10]]
+    ],
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.219608, 0.709804, 0.333333]]
+    ],
+    Mesh[
+      name = "plate1.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 2
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate2.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 20
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate3.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 50
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate4.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 100
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "floor.obj",
+      vertexCount = 12,
+      triangleCount = 4,
+      bsdf = Diffuse[
+        albedo = [0.4, 0.4, 0.4]
+      ],
+      luminaire = null
+    ]
+  },
+  evaluator = Variance[ reference = phong-ref.exr ]
+]
+
+The program has unexpectedly finished.
+/home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori crashed
+mce: [Hardware Error]: Machine check events logged
+
+Starting /home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori...
+constructing  "directional" 
+Using default version (0)
+Loading "meshes/sphere.obj" ..
+Read 768 triangles and 441 vertices.
+Loading "meshes/sphere.obj" ..
+constructing  "independent" 
+constructing  "perspective" 
+constructing  "gaussian" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+Read 768 triangles and 441 vertices.
+Loading "meshes/plate1.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate2.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate3.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate4.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/floor.obj" ..
+Read 4 triangles and 12 vertices.
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "variance" 
+Reading a 768x512 OpenEXR file from "phong-ref.exr"
+constructing  "scene" 
+Constructing a SAH kd-tree (1548 triangles, 4 threads) ..
+Finished after 6 ms (used 2048 KiB of temp. memory)
+The final kd-tree requires 32 KiB of memory
+
+Configuration: Scene[
+  integrator = DirectionalIntegrator[],
+  sampler = Independent[sampleCount=6144]
+  camera = PerspectiveCamera[
+    cameraToWorld = [ 0.9578,       0,       0,       0;
+                           0,  0.9174, -0.2873,       6;
+                           0, -0.2752, -0.9578,    27.5;
+                           0,       0,       0,       1],
+    outputSize = [768, 512],
+    fov = 25,
+    apertureRadius = 0,
+    focusDistance = 10000,
+    clip = [0.0001, 10000],
+    rfilter = GaussianFilter[radius=2, stddev=0.5]
+  ],
+  medium = null,
+  envLuminaire = null,
+  meshes = {
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.941176, 6.39216, 10]]
+    ],
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.219608, 0.709804, 0.333333]]
+    ],
+    Mesh[
+      name = "plate1.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 2
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate2.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 20
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate3.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 50
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate4.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 100
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "floor.obj",
+      vertexCount = 12,
+      triangleCount = 4,
+      bsdf = Diffuse[
+        albedo = [0.4, 0.4, 0.4]
+      ],
+      luminaire = null
+    ]
+  },
+  evaluator = Variance[ reference = phong-ref.exr ]
+]
+
+Rendering finished (took 1038894 ms)
+
+
+Variance:
+	Red  = 1.5142e-05
+	Green = 3.801e-05
+	Blue = 9.79302e-05
+
+Stddev:
+	Red  = 0.00389127
+	Green = 0.00616523
+	Blue = 0.00989597
+
+Writing a 768x512 OpenEXR file to "./phong-brdf.exr"
+/home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori exited with code 0
+
+Starting /home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori...
+constructing  "directional" 
+constructing  "independent" 
+Using default version (0)
+Loading "meshes/sphere.obj" ..
+Read 768 triangles and 441 vertices.
+Loading "meshes/sphere.obj" ..
+constructing  "perspective" 
+constructing  "gaussian" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+Read 768 triangles and 441 vertices.
+Loading "meshes/plate1.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate2.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate3.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate4.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/floor.obj" ..
+Read 4 triangles and 12 vertices.
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "variance" 
+Reading a 768x512 OpenEXR file from "phong-ref.exr"
+constructing  "scene" 
+Constructing a SAH kd-tree (1548 triangles, 4 threads) ..
+Finished after 5 ms (used 2048 KiB of temp. memory)
+The final kd-tree requires 32 KiB of memory
+
+Configuration: Scene[
+  integrator = DirectionalIntegrator[],
+  sampler = Independent[sampleCount=1048576]
+  camera = PerspectiveCamera[
+    cameraToWorld = [ 0.9578,       0,       0,       0;
+                           0,  0.9174, -0.2873,       6;
+                           0, -0.2752, -0.9578,    27.5;
+                           0,       0,       0,       1],
+    outputSize = [768, 512],
+    fov = 25,
+    apertureRadius = 0,
+    focusDistance = 10000,
+    clip = [0.0001, 10000],
+    rfilter = GaussianFilter[radius=2, stddev=0.5]
+  ],
+  medium = null,
+  envLuminaire = null,
+  meshes = {
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.941176, 6.39216, 10]]
+    ],
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.219608, 0.709804, 0.333333]]
+    ],
+    Mesh[
+      name = "plate1.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 2
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate2.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 20
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate3.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 50
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate4.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 100
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "floor.obj",
+      vertexCount = 12,
+      triangleCount = 4,
+      bsdf = Diffuse[
+        albedo = [0.4, 0.4, 0.4]
+      ],
+      luminaire = null
+    ]
+  },
+  evaluator = Variance[ reference = phong-ref.exr ]
+]
+
+The program has unexpectedly finished.
+/home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori crashed
+
+Starting /home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori...
+constructing  "directional" 
+constructing  "independent" 
+Using default version (0)
+Loading "meshes/sphere.obj" ..
+Read 768 triangles and 441 vertices.
+Loading "meshes/sphere.obj" ..
+constructing  "perspective" 
+constructing  "gaussian" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "area" 
+constructing  "diffuse" 
+constructing  "obj" 
+Read 768 triangles and 441 vertices.
+Loading "meshes/plate1.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate2.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate3.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/plate4.obj" ..
+Read 2 triangles and 6 vertices.
+Loading "meshes/floor.obj" ..
+Read 4 triangles and 12 vertices.
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "phong" 
+constructing  "obj" 
+constructing  "diffuse" 
+constructing  "obj" 
+constructing  "variance" 
+Reading a 768x512 OpenEXR file from "phong-ref.exr"
+constructing  "scene" 
+Constructing a SAH kd-tree (1548 triangles, 4 threads) ..
+Finished after 6 ms (used 2048 KiB of temp. memory)
+The final kd-tree requires 32 KiB of memory
+
+Configuration: Scene[
+  integrator = DirectionalIntegrator[],
+  sampler = Independent[sampleCount=10240]
+  camera = PerspectiveCamera[
+    cameraToWorld = [ 0.9578,       0,       0,       0;
+                           0,  0.9174, -0.2873,       6;
+                           0, -0.2752, -0.9578,    27.5;
+                           0,       0,       0,       1],
+    outputSize = [768, 512],
+    fov = 25,
+    apertureRadius = 0,
+    focusDistance = 10000,
+    clip = [0.0001, 10000],
+    rfilter = GaussianFilter[radius=2, stddev=0.5]
+  ],
+  medium = null,
+  envLuminaire = null,
+  meshes = {
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.941176, 6.39216, 10]]
+    ],
+    Mesh[
+      name = "sphere.obj",
+      vertexCount = 441,
+      triangleCount = 768,
+      bsdf = Diffuse[
+        albedo = [0, 0, 0]
+      ],
+      luminaire = AreaLuminaire[radiance=[0.219608, 0.709804, 0.333333]]
+    ],
+    Mesh[
+      name = "plate1.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 2
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate2.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 20
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate3.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 50
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "plate4.obj",
+      vertexCount = 6,
+      triangleCount = 2,
+      bsdf = Phong[
+        Kd = [0.07, 0.09, 0.13]
+        Ks = [0.7, 0.9, 1.3]
+        n  = 100
+      ],
+      luminaire = null
+    ],
+    Mesh[
+      name = "floor.obj",
+      vertexCount = 12,
+      triangleCount = 4,
+      bsdf = Diffuse[
+        albedo = [0.4, 0.4, 0.4]
+      ],
+      luminaire = null
+    ]
+  },
+  evaluator = Variance[ reference = phong-ref.exr ]
+]
+
+Rendering finished (took 2061756 ms)
+
+
+Variance:
+	Red  = 1.51323e-05
+	Green = 3.7786e-05
+	Blue = 9.75745e-05
+
+Stddev:
+	Red  = 0.00389002
+	Green = 0.00614703
+	Blue = 0.00987798
+
+Writing a 768x512 OpenEXR file to "./phong-brdf.exr"
+/home/daroud/projects/acg/acg2015/build-nori-Desktop-Debug/bin/nori exited with code 0
