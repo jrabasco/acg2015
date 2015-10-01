@@ -3,7 +3,7 @@
  *******************************************************************************
  *  Copyright (c) 2013 Alexandre Kaspar <alexandre.kaspar@a3.epfl.ch>
  *  For Advanced Computer Graphics, at the LGG / EPFL
- * 
+ *
  *        DO NOT REDISTRIBUTE
  ***********************************************/
 
@@ -52,19 +52,12 @@ public:
             return Color3f(0.0f);
         }
 
-        float cosTheta = Frame::cosTheta(bRec.wo);
-        float cosThetaPlusAlpha = Frame::cosTheta(bRec.wi);
-
-        float theta = acosf(cosTheta);
-        float alpha = acosf(cosThetaPlusAlpha) - theta;
-        alpha = alpha > M_PI_2 ? M_PI_2 : alpha;
-        alpha = alpha < -M_PI_2 ? -M_PI_2 : alpha;
-
+        // Based on http://www.cs.virginia.edu/~jdl/importance.doc‎
+        float alpha = getAlpha(bRec);
         float kd = m_Kd.getLuminance();
         float ks = m_Ks.getLuminance();
 
         float result = kd/M_PI + ks * (m_exp+2.0f)/(2.0f*M_PI) * powf(cosf(alpha), m_exp);
-        // Based on http://www.cs.virginia.edu/~jdl/importance.doc‎
 
         return Color3f(result);
     }
@@ -79,9 +72,14 @@ public:
                 || Frame::cosTheta(bRec.wo) <= 0)
             return 0.0f;
 
-        // TODO implement the pdf of phong importance sampling
-        
-        return 0.0f;
+        float kd = m_Kd.getLuminance();
+        float ks = m_Ks.getLuminance();
+        float alpha = getAlpha(bRec);
+
+        float diffuseTerm = Frame::cosTheta(bRec.wo)/M_PI;
+        float specularTerm = (m_exp + 1.0f) * powf(cosf(alpha), m_exp) / (2.0f * M_PI);
+
+        return kd * diffuseTerm + ks * specularTerm;
     }
 
     /// Draw a a sample from the BRDF model
@@ -103,11 +101,10 @@ public:
 
         bRec.measure = ESolidAngle;
         bRec.eta = 1.0f; // no change in relative index
-        
+
         // TODO implement phong importance sampling
-        
         bRec.wo = Vector3f(0.0f, 0.0f, 1.0f); // this is utterly wrong!
-        
+
         return Color3f(0.0f) * Frame::cosTheta(bRec.wo);
     }
 
@@ -132,6 +129,23 @@ public:
 private:
     Color3f m_Kd, m_Ks;
     float m_exp;
+
+    inline float getAlpha(const BSDFQueryRecord &bRec) const {
+        float cosTheta = Frame::cosTheta(bRec.wo);
+        float cosThetaPlusAlpha = Frame::cosTheta(bRec.wi);
+
+        float theta = acosf(cosTheta);
+        float alpha = acosf(cosThetaPlusAlpha) - theta;
+
+        if (alpha > M_PI_2) {
+            alpha = M_PI_2;
+        } else if (alpha < -M_PI_2) {
+            alpha = -M_PI_2;
+        }
+
+        return alpha;
+    }
+
 };
 
 GROUP_NAMESPACE_END
