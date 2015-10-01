@@ -110,7 +110,11 @@ public:
         float phi = 2.0f * M_PI * sample.y();
         if (useSpecular) {
             float exponent = 1.0f/(m_exp+1.0f);
-            theta = -acosf(Frame::cosTheta(bRec.wi)) + acosf(powf(sample.x(), exponent));
+            float alpha = acosf(powf(sample.x(), exponent));
+            if (alpha < 0) {
+                std::cout << alpha << std::endl;
+            }
+            theta = clamp(alpha, M_PI_2);
         } else {
             theta = acosf(sqrtf(sample.x()));
         }
@@ -156,13 +160,16 @@ private:
         float theta = acosf(cosTheta);
         float alpha = acosf(cosThetaPlusAlpha) - theta;
 
-        if (alpha > M_PI_2) {
-            alpha = M_PI_2;
-        } else if (alpha < -M_PI_2) {
-            alpha = -M_PI_2;
-        }
+        return clamp(alpha, M_PI_2);
+    }
 
-        return alpha;
+    inline float clamp(const float f, const float limit) const {
+        if (f > limit) {
+            return limit;
+        } else if (f < -limit) {
+            return -limit;
+        }
+        return f;
     }
 
 };
