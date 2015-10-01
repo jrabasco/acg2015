@@ -29,7 +29,7 @@ the expected number of iterations is $\frac 1p = \frac{12}{\pi} \approx 3.8197$.
 \section*{Question 2.3.1}
 The challenge here is to find a uniformly distributed point of the unit hemisphere given two random rel numbers uniformly distributed between 0 and 1, say $\xi_1$ and $\xi_2$. The reader might refer to Figure \ref{fig:hemisphere} to understand our solution. It basically proceeds as follows:
 \begin{enumerate}[1.]
-\item A rand point $r$ uniformly distributed over the circular surface which is the base of our hemisphere is generated. The methods presented in class is used here, i.e. $(\sqrt{\xi_1}, 2\pi\xi_2)$ is used instead of the naive but biased approach that takes $(\xi_2, 2\pi\xi_2)$ as a random point\footnote{The points of this sentence are represented in polar coordinates in the XY plane.}. As a reminder, the problem with the later is that points near the center of the circular surphace are more likely to be picked. %Explain more?
+\item A rand point $r$ uniformly distributed over the circular surface which is the base of our hemisphere is generated. The methods presented in class is used here, i.e. $(\sqrt{\xi_1}, 2\pi\xi_2)$ is used instead of the naive but biased approach that takes $(\xi_2, 2\pi\xi_2)$ as a random point\footnote{The points of this sentence are represented in polar coordinates in the XY plane.}. As a reminder, the problem with the later is that points near the center of the circular surface are more likely to be picked. 
 \item Then, this random point is projected onto the hemisphere surface by a simple application of the Pythagorean theorem resulting, in a Cartesian coordinate system, in the point
 $$
 p = (\sqrt{\xi_1}\cos{\left( 2\pi\xi_2\right)}, \sqrt{\xi_1}\sin{\left( 2\pi\xi_2\right)}, \sqrt{1 - \xi_1}).
@@ -65,4 +65,29 @@ $$
 \label{fig:hemisphere}
 \end{figure}
 
+\section*{Question 3.3.2}
+In this part, we want to estimate
+$$
+L_o(x, \omega_o) = \int_{H^2}f(x, \omega_i, \omega_o)L_i(x, \omega_i)(n \cdot \omega_i)d\omega_i
+$$
+where $L_o(x, \omega_o)$ represents the radiance reflected when an incoming ray $\omega_i$ with radiance $L_i(x, \omega_i)$ hits a point $x$ of a surface with normal $\hat n$. $\omega_i$, $\omega_o$ and $n$ are unit vectors in the above expression.
+
+The Phong model provides us with the following BRDF:
+$$
+f(x, \omega_i, \omega_o) = f_d(x, \omega_i, \omega_o) + f_s(x, \omega_i, \omega_o) = \frac{k_d}{\pi} + k_s\frac{n + 2}{2\pi}(\omega_i \cdot s)^n
+$$
+where $s$ is a vector pointing in the perfect specular direction with respect to $\omega_o$.
+
+We are trying to perform a backward ray-tracing with importance sampling, i.e. trying to guess the most important $\omega_i$ given $\omega_o$ and $x$ to determine $L_o(x, \omega_o)$. We therefore want to find the probability distribution function $p(\omega_i)$ such that the Monte Carlo estimator
+$$F_N = \frac{1}{N}\sum\limits_{i=1}^N\frac{f(x, \omega_i, \omega_o)L_i(x, \omega_i)(n \cdot \omega_i)}{p(\omega_i)}
+$$
+is unbiased and has a small variance. The ideal case -- in which the estimator would actually be equal to the integral -- would be to choose a PDF proportional $f(x, \omega_i, \omega_o)L_i(x, \omega_i)(n \cdot \omega_i)$ but we don't know $\omega_i$ and therefore do not know $L_i(x, \omega_i)$. We therefore take the trade-off to choose $p(\omega_i)$ such that it is proportional to only $f(x, \omega_i, \omega_o)(n \cdot \omega_i)$. 
+
+%TODO BLABLABLA ABOUT HOW TO DERIVE p(w_i) and why the approach is unbiased
+
+
+\paragraph{Question 2.3.2b}Once we have picked $\omega_i$, one can easily compute\linebreak 
+$\cos\alpha := \omega_i \cdot s$ where $\alpha$ is the angle between $s$ and $\omega_i$. First note that $$\cos \left (\angle(\omega_o, n)\right ) = \cos \left ( \angle(n,s) \right ) = \omega_o\cdot n.$$ Similarly, we have that
+$$\cos\left(\angle (n, \omega_i)\right) = \cos\left(\angle(n,s) + \alpha\right) = \omega_i \cdot n.$$
+It follows that $\cos^{-1}{\left(\omega_i \cdot n\right)} - \cos^{-1}{\left(\omega_o\cdot n\right)} = \alpha.$
 \end{document}
