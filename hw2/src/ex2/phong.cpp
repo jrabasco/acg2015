@@ -48,15 +48,25 @@ public:
            is wrong, or when queried for illumination on the backside */
         if (bRec.measure != ESolidAngle
                 || Frame::cosTheta(bRec.wi) <= 0
-                || Frame::cosTheta(bRec.wo) <= 0)
+                || Frame::cosTheta(bRec.wo) <= 0) {
             return Color3f(0.0f);
+        }
 
+        float cosTheta = Frame::cosTheta(bRec.wo);
+        float cosThetaPlusAlpha = Frame::cosTheta(bRec.wi);
+
+        float theta = acosf(cosTheta);
+        float alpha = acosf(cosThetaPlusAlpha) - theta;
+        alpha = alpha > M_PI_2 ? M_PI_2 : alpha;
+        alpha = alpha < -M_PI_2 ? -M_PI_2 : alpha;
+
+        float kd = m_Kd.getLuminance();
+        float ks = m_Ks.getLuminance();
+
+        float result = kd/M_PI + ks * (m_exp+2.0f)/(2.0f*M_PI) * powf(cosf(alpha), m_exp);
         // Based on http://www.cs.virginia.edu/~jdl/importance.doc‎
 
-        // TODO evaluate the phong brdf for the pair of given incoming
-        //      and outgoing directions bRec.wi & bRec.wo
-        
-        return Color3f(0.0f);
+        return Color3f(result);
     }
 
     /// Compute the density of \ref sample() wrt. solid angles
