@@ -81,7 +81,14 @@ where $s$ is a vector pointing in the perfect specular direction with respect to
 We are trying to perform a backward ray-tracing with importance sampling, i.e. trying to guess the most important $\omega_i$ given $\omega_o$ and $x$ to determine $L_o(x, \omega_o)$. We therefore want to find the probability distribution function $p(\omega_i)$ such that the Monte Carlo estimator
 $$F_N = \frac{1}{N}\sum\limits_{i=1}^N\frac{f(x, \omega_i, \omega_o)L_i(x, \omega_i)(n \cdot \omega_i)}{p(\omega_i)}
 $$
-is unbiased and has a small variance. The ideal case -- in which the estimator would actually be equal to the integral -- would be to choose a PDF proportional $f(x, \omega_i, \omega_o)L_i(x, \omega_i)(n \cdot \omega_i)$ but we don't know $\omega_i$ and therefore do not know $L_i(x, \omega_i)$. We therefore take the trade-off to choose $p(\omega_i)$ such that it is proportional to only $f(x, \omega_i, \omega_o)(n \cdot \omega_i)$. 
+is unbiased and has a small variance. The ideal case -- in which the estimator would actually be equal to the integral -- would be to choose a PDF proportional $f(x, \omega_i, \omega_o)L_i(x, \omega_i)(n \cdot \omega_i)$ but we don't know $\omega_i$ and therefore do not know $L_i(x, \omega_i)$. We therefore take the trade-off to choose $p(\omega_i)$ such that it is proportional to only $f(x, \omega_i, \omega_o)(n \cdot \omega_i)$.
+
+In order to choose $p(\omega_i)$ proportional to $f(x, \omega_i, \omega_o)(n \cdot \omega_i)$ it is easier to decompose $f$ in its specular and diffuse component and choose $p_s(\omega_i)$ proportional to the specular component and $p_d(\omega_i)$ proportional to the diffuse component.
+$p_s(\omega_i) = \frac{n+1}{2\pi}\cos^n(\alpha)$ is a good choice to get a ray distributed mainly near the specular direction. $p_d(\omega_i) = \frac{1}{\pi}\cos(\theta_i)$ is a good choice to have an evenly distributed ray in the hemisphere around the point of intersection (which is a good choice for the diffuse component). Then with probability $\frac{k_s}{k_s + k_d}$ we chose a specular sample following the distribution $p_s(\omega_i)$ and with probability $\frac{k_d}{k_s + k_d}$ we chose a diffuse sample following the distribution $p_d(\omega_i)$. Thus, we can derive:
+
+$$p(\omega_i) = \frac{k_s \cdot p_s(\omega_i) + k_d \cdot p_d(\omega_i)}{k_s + k_d}$$
+
+It is easy to see that this gives an unbiased estimator as the weights in the weighed average used to compute $p(\omega_i)$ are equal to the probabilities to choose a specular sample or a diffuse sample.
 
 %TODO BLABLABLA ABOUT HOW TO DERIVE p(w_i) and why the approach is unbiased
 
