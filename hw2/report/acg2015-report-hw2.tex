@@ -106,7 +106,7 @@ It follows that $\cos^{-1}{\left(\omega_i \cdot n\right)} - \cos^{-1}{\left(\ome
 \section*{Results}
 
 \subsection*{Naive/Lambertian Model}
-Figure \ref{fig:lamb} shows the RGB standard deviation as the number of samples increases (from 64 to 4096 samples) under both the Naive and Lambertian model. As one could expect, the standard deviation is slightly less in the Lambertian case than in the naive one for a small sample size. However, for a large number of samples, both approach resemble each other in terms of standard deviation.
+Figure \ref{fig:lamb} shows the RGB standard deviation as the number of samples increases (from 64 to 4096 samples) under both the Naive and Lambertian model. As one could expect, the standard deviation is slightly less in the Lambertian case than in the naive one for a small sample size. However, as the number of samples approaches infinity, both approach resemble each other in terms of standard deviation.
 
 \begin{figure}[p]
 \centering
@@ -129,14 +129,27 @@ Figure \ref{fig:lamb} shows the RGB standard deviation as the number of samples 
 
 
 \subsection*{Phong Model}
-Figure \ref{fig:phong_stdev} shows the RGB standard deviation as the number of sampels increases (again from 64 to 4096 samples) under the Phong model. It is hard to draw conclusion by comparing the absolute values of such results with the ones of the Lambertian model since this is a different scene. Still, one can observe a quicker convergence as the curves flatten sooner.
-\begin{figure}[h]
+Figure \ref{fig:phong_stdev} shows the RGB standard deviation as the number of sampels increases (again from 64 to 4096 samples) under the Phong model. Figure \ref{fig:phong_stdev_details} shows the details of the deviation while sampling with 64 samples. One can see how the absence of red in the scene is illustrated by its low deviation value and absence of variation.
+
+
+It is hard to draw conclusion by comparing the absolute values of such results with the ones of the Lambertian model since this is a different scene. Still, one can observe a quicker convergence as the curves flatten sooner.
+\begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{assets/phong_stdev}
+\\
 
-\caption{Summary of the convergence of the Phong Model.}
 \label{fig:phong_stdev}
 \end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=.5\textwidth]{assets/phong-brdf_plot_6_red} \\
+\includegraphics[width=.5\textwidth]{assets/phong-brdf_plot_6_green} \\
+\includegraphics[width=.5\textwidth]{assets/phong-brdf_plot_6_blue}
+\caption{Deviation graph for the Phong Model (64 samples).}
+\label{fig:phong_stdev_details}
+\end{figure}
+
 
 \begin{figure}[p]
 \centering
