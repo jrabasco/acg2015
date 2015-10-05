@@ -84,11 +84,11 @@ $$
 is unbiased and has a small variance. The ideal case -- in which the estimator would actually be equal to the integral -- would be to choose a PDF proportional $f(x, \omega_i, \omega_o)L_i(x, \omega_i)(n \cdot \omega_i)$ but we don't know $\omega_i$ and therefore do not know $L_i(x, \omega_i)$. We therefore take the trade-off to choose $p(\omega_i)$ such that it is proportional to only $f(x, \omega_i, \omega_o)(n \cdot \omega_i)$.
 
 \paragraph{Question 2.3.2a}
-We chose $p(\omega_i)$ according to the provided paper. In this paragraph, we will try to capture the intuition out of these formulas. For simplicity reasons, it is easier to decompose $p(\omega_i)$ in its specular and diffuse component and choose $p_s(\omega_i)$ proportional to the specular component and $p_d(\omega_i)$ proportional to the diffuse component.
+We chose $p(\omega_i)$ according to the provided paper \cite{lawrence}. In this paragraph, we will try to capture the intuition out of these formulas. For simplicity reasons, it is easier to decompose $p(\omega_i)$ in its specular and diffuse component and choose $p_s(\omega_i)$ proportional to the specular component and $p_d(\omega_i)$ proportional to the diffuse component.
 
 Regarding the diffuse component, the paper advises use to take $p_s(\omega_i) = \frac{n+1}{2\pi}\cos^n(\alpha)$ to get a ray distributed mainly near the specular direction.
 One could be surprised that $\frac{n+2}{2\pi}(\omega_i \cdot s)^n(n \cdot \omega_i)$ was not simply chosen.
-According to \cite{Lafortune}, the main reason is that it lacks integrability and so fails to be a PDF.
+According to \cite{lafortune}, the main reason is that it lacks integrability and so fails to be a PDF.
 
 For the diffuse case, $p_d(\omega_i) = \frac{\cos(\theta_i)}{\pi}$ is the obvious choice. It favors ray that are evenly distributed ray around the surface normal at the point of intersection while limiting the numbers of sample with a 90 degree angle with the surface normal (those rays have little irradiance). 
 
@@ -144,4 +144,8 @@ Figure \ref{fig:phong_stdev} shows the RGB standard deviation as the number of s
 \includegraphics[width=\textwidth]{assets/phong4096}
 \caption{A scene rendered using the Phong Model using 64~(top) and 4096~samples~(bottom).}
 \end{figure}
+
+\clearpage
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
 \end{document}
