@@ -8,6 +8,9 @@
 \usetikzlibrary{decorations.pathreplacing}
 \usepackage{enumerate}
 
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
 \begin{document}
 
 \maketitle
@@ -29,7 +32,7 @@ the expected number of iterations is $\frac 1p = \frac{12}{\pi} \approx 3.8197$.
 \section*{Question 2.3.1}
 The challenge here is to find a uniformly distributed point of the unit hemisphere given two random rel numbers uniformly distributed between 0 and 1, say $\xi_1$ and $\xi_2$. The reader might refer to Figure \ref{fig:hemisphere} to understand our solution. It basically proceeds as follows:
 \begin{enumerate}[1.]
-\item A rand point $r$ uniformly distributed over the circular surface which is the base of our hemisphere is generated. The methods presented in class is used here, i.e. $(\sqrt{\xi_1}, 2\pi\xi_2)$ is used instead of the naive but biased approach that takes $(\xi_2, 2\pi\xi_2)$ as a random point\footnote{The points of this sentence are represented in polar coordinates in the XY plane.}. As a reminder, the problem with the later is that points near the center of the circular surface are more likely to be picked. 
+\item A random point $r$ uniformly distributed over the circular surface which is the base of our hemisphere is generated. The method presented in class is used here, i.e. $(\sqrt{\xi_1}, 2\pi\xi_2)$ is used instead of the naive but biased approach that takes $(\xi_1, 2\pi\xi_2)$ as a random point\footnote{The points of this sentence are represented in polar coordinates in the XY plane.}. As a reminder, the problem with the later is that points near the center of the circular surface are more likely to be picked. 
 \item Then, this random point is projected onto the hemisphere surface by a simple application of the Pythagorean theorem resulting, in a Cartesian coordinate system, in the point
 $$
 p = (\sqrt{\xi_1}\cos{\left( 2\pi\xi_2\right)}, \sqrt{\xi_1}\sin{\left( 2\pi\xi_2\right)}, \sqrt{1 - \xi_1}).
@@ -162,7 +165,7 @@ Figure \ref{fig:phong_stdev} shows the RGB standard deviation as the number of s
 
 
 It is hard to draw general conclusion by comparing the absolute values of such results with the ones of the Lambertian model since this is a different scene. Still, one can observe a quicker convergence as the curves flatten sooner.
-\begin{figure}[p]
+\begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{assets/phong_stdev}
 \label{fig:phong_stdev}
