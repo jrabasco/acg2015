@@ -1,0 +1,1 @@
+-j4 CXXFLAGS+='-DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT=1 -O3 -pthread -I/usr/include/libdrm' 'LFLAGS+=-Wl,-O1,--sort-common,--as-needed,-z,relro,-rpath=/home/daroud/projects/acg/acg2015/hw3/lib'
