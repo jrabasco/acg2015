@@ -117,7 +117,13 @@ public:
                 Color3f sampledLight = sampleLights(scene, lRec, sample);
 
                 float cosThetaPrime = its.shFrame.n.dot(lRec.d);
-                return sampledLight * cosThetaPrime;
+                const BSDFQueryRecord bsdfRec;
+                bsdfRec.wo=ray.d;
+                bsdfRec.wi=lRec.d;
+                bsdfRec.eta=1;
+                bsdfRec.measure=ESolidAngle;
+
+                return bsdf->eval(bsdfRec) * sampledLight * cosThetaPrime;
         }
 
         QString toString() const {
