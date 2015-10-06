@@ -14,6 +14,7 @@
 #include <nori/luminaire.h>
 #include <nori/sampler.h>
 #include <nori/scene.h>
+#include <pthread.h>
 #include <vector>
 
 NORI_NAMESPACE_BEGIN
@@ -65,7 +66,8 @@ public:
                         throw NoriException("LightIntegrator::sampleLights(): No luminaires were defined!");
 
                 // 1. Choose one luminaire at random
-                lRec.luminaire = luminaires[rand() % luminaires.size()];
+                int luminaireIdx = rand() % luminaires.size();
+                lRec.luminaire = luminaires[luminaireIdx];
 
                 // 2. Sample the position on the luminaire mesh
                 // using Mesh::samplePosition(const Point2d &sample, Point3f &p, Normal3f &n)
@@ -78,20 +80,29 @@ public:
                 const float y = lRec.p.y() - lRec.ref.y();
                 const float z = lRec.p.z() - lRec.ref.z();
                 const float normSquared = Vector3f(x, y, z).squaredNorm();
-                const float norm = sqrtf(normSquared);
+                lRec.dist = sqrtf(normSquared);
 
-                lRec.d = Vector3f(x / norm, y / norm, z / norm);
+                lRec.d = Vector3f(x / lRec.dist, y / lRec.dist, z / lRec.dist);
                 const Ray3f shadowRay(lRec.ref, lRec.d);
                 Intersection its;
-
                 const bool doesIntersect = scene->rayIntersect(shadowRay, its);
+                if (!doesIntersect)
+                    return 0.0f;
+
                 const float cosThetaSecond = lRec.d.dot(lRec.n);
-                const bool doesLightPointsTowardsRef = cosThetaSecond < 0;
-                const float visibility = (doesIntersect && doesLightPointsTowardsRef) ? 1.0f : 0.0f;
-                const float pdf = getMesh(lRec.luminaire)->pdf();
+                const bool doesLightPointsTowardsRef = cosThetaSecond < 0.0f;
+                if (!doesLightPointsTowardsRef)
+                    return 0.0f;
+
+                lRec.pdf = getMesh(lRec.luminaire)->pdf();
 
                 // 4. Return radiance emitted from luminaire multiplied by the appropriate terms G, V ...
-                return Color3f(lRec.luminaire->eval(lRec) * visibility * cosThetaSecond / normSquared / pdf);
+                if (lRec.pdf <= 0.0f || normSquared == 0.0f)
+                    return 0.0f;
+
+
+                const Color3f L_e = lRec.luminaire->eval(lRec);
+                return ((L_e * fabs(cosThetaSecond)) / normSquared) / lRec.pdf;
         }
 
         /**
@@ -116,11 +127,12 @@ public:
                 lRec.ref = its.p;
                 Color3f sampledLight = sampleLights(scene, lRec, sample);
 
-                float cosThetaPrime = its.shFrame.n.dot(lRec.d);
-                BSDFQueryRecord bsdfRec(ray.d,lRec.d,ESolidAngle);
-                bsdfRec.eta=1;
+                float cosThetaPrime = its.shFrame.n.dot(its.toLocal(lRec.d));
 
-                return bsdf->eval(bsdfRec) * sampledLight * cosThetaPrime;
+                BSDFQueryRecord bRec(its.toLocal(-ray.d), its.toLocal(lRec.d), ESolidAngle);
+                const Color3f f_r = bsdf->eval(bRec);
+
+                return f_r * sampledLight * fabs(cosThetaPrime);
         }
 
         QString toString() const {
