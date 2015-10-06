@@ -64,21 +64,34 @@ public:
                 if (luminaires.size() == 0)
                         throw NoriException("LightIntegrator::sampleLights(): No luminaires were defined!");
 
-                // TODO Implement the following steps
-                // and take care of using the good G, V terms to work with the Li method below
-
                 // 1. Choose one luminaire at random
-
+                lRec.luminaire = luminaires[rand() % luminaires.size()];
 
                 // 2. Sample the position on the luminaire mesh
                 // using Mesh::samplePosition(const Point2d &sample, Point3f &p, Normal3f &n)
+                getMesh(lRec.luminaire)->samplePosition(sample, lRec.p, lRec.n);
 
                 // 3. Compute geometry term G and visibility term on the luminaire's side (no cos(w) of the mesh side)
                 // as well as the pdf of that point being found
                 // use Mesh::pdf to get the probability of choosing the point in Mesh::samplePosition
+                const float x = lRec.p.x() - lRec.ref.x();
+                const float y = lRec.p.y() - lRec.ref.y();
+                const float z = lRec.p.z() - lRec.ref.z();
+                const float normSquared = Vector3f(x, y, z).squaredNorm();
+                const float norm = sqrtf(normSquared);
+
+                lRec.d = Vector3f(x / norm, y / norm, z / norm);
+                const Ray3f shadowRay(lRec.ref, lRec.d);
+                Intersection its;
+
+                const bool doesIntersect = scene->rayIntersect(shadowRay, its);
+                const float cosThetaSecond = lRec.d.dot(lRec.n);
+                const bool doesLightPointsTowardsRef = cosThetaSecond < 0;
+                const float visibility = (doesIntersect && doesLightPointsTowardsRef) ? 1.0f : 0.0f;
+                const float pdf = getMesh(lRec.luminaire)->pdf();
 
                 // 4. Return radiance emitted from luminaire multiplied by the appropriate terms G, V ...
-                return Color3f(0.0f);
+                return Color3f(lRec.luminaire->eval(lRec) * visibility * cosThetaSecond / normSquared / pdf);
         }
 
         /**
@@ -97,12 +110,14 @@ public:
 
                 const Mesh *mesh = its.mesh;
                 const BSDF *bsdf = mesh->getBSDF();
+                const Point2f sample(sampler->next2D());
 
-                /// TODO implement direct lighting using light sampling using
-                //      sampleLights(const Scene *, LuminaireQueryRecord &, const Point2d &)
-                // which you also have to implement
+                LuminaireQueryRecord lRec;
+                lRec.ref = its.p;
+                Color3f sampledLight = sampleLights(scene, lRec, sample);
 
-                return Color3f(0.0f);
+                float cosThetaPrime = its.shFrame.n.dot(lRec.d);
+                return sampledLight * cosThetaPrime;
         }
 
         QString toString() const {
