@@ -86,8 +86,12 @@ public:
                 const Ray3f shadowRay(lRec.ref, lRec.d);
                 Intersection its;
                 const bool doesIntersect = scene->rayIntersect(shadowRay, its);
+
                 if (!doesIntersect)
-                    return 0.0f;
+                    return Color3f(0.0f);
+
+                if (doesIntersect && !its.mesh->isLuminaire())
+                    return Color3f(0.0f);
 
                 const float cosThetaSecond = lRec.d.dot(lRec.n);
                 const bool doesLightPointsTowardsRef = cosThetaSecond < 0.0f;
@@ -121,13 +125,20 @@ public:
 
                 const Mesh *mesh = its.mesh;
                 const BSDF *bsdf = mesh->getBSDF();
-                const Point2f sample(sampler->next2D());
+
+                /* In case we hit a luminaire directly. */
+                if (mesh->isLuminaire()) {
+                    const Luminaire *luminaire = its.mesh->getLuminaire();
+                    return luminaire->eval(LuminaireQueryRecord(luminaire, ray.o, its.p, its.shFrame.n));
+                }
+
 
                 LuminaireQueryRecord lRec;
                 lRec.ref = its.p;
+                const Point2f sample(sampler->next2D());
                 Color3f sampledLight = sampleLights(scene, lRec, sample);
 
-                float cosThetaPrime = its.shFrame.n.dot(its.toLocal(lRec.d));
+                float cosThetaPrime = Frame::cosTheta(ray.d);
 
                 BSDFQueryRecord bRec(its.toLocal(-ray.d), its.toLocal(lRec.d), ESolidAngle);
                 const Color3f f_r = bsdf->eval(bRec);
