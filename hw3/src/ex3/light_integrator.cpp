@@ -76,37 +76,37 @@ public:
                 // 3. Compute geometry term G and visibility term on the luminaire's side (no cos(w) of the mesh side)
                 // as well as the pdf of that point being found
                 // use Mesh::pdf to get the probability of choosing the point in Mesh::samplePosition
-                const float x = lRec.p.x() - lRec.ref.x();
-                const float y = lRec.p.y() - lRec.ref.y();
-                const float z = lRec.p.z() - lRec.ref.z();
-                const float normSquared = Vector3f(x, y, z).squaredNorm();
-                lRec.dist = sqrtf(normSquared);
-
-                lRec.d = Vector3f(x / lRec.dist, y / lRec.dist, z / lRec.dist);
+                lRec = LuminaireQueryRecord(lRec.luminaire, lRec.ref, lRec.p, lRec.n);
                 const Ray3f shadowRay(lRec.ref, lRec.d);
+
                 Intersection its;
                 const bool doesIntersect = scene->rayIntersect(shadowRay, its);
-
-                if (!doesIntersect)
+                if (!doesIntersect) {
+                        if (scene->hasEnvLuminaire()) {
+                               lRec = LuminaireQueryRecord(scene->getEnvLuminaire(), shadowRay);
+                               return lRec.luminaire->eval(lRec);
+                        } else {
+                            return Color3f(0.0f);
+                        }
+                } else if (!its.mesh->isLuminaire()) {
                     return Color3f(0.0f);
-
-                if (doesIntersect && !its.mesh->isLuminaire())
-                    return Color3f(0.0f);
+                }
 
                 const float cosThetaSecond = -lRec.d.dot(lRec.n);
-                const bool doesLightPointsTowardsRef = cosThetaSecond > 0.0f;
-                if (!doesLightPointsTowardsRef)
+                const bool doesLightPointsTowardsRef = cosThetaSecond > 0;
+                if (!doesLightPointsTowardsRef) {
                     return 0.0f;
+                }
 
                 lRec.pdf = getMesh(lRec.luminaire)->pdf();
 
                 // 4. Return radiance emitted from luminaire multiplied by the appropriate terms G, V ...
-                if (lRec.pdf <= 0.0f || normSquared == 0.0f)
+                if (lRec.pdf <= 0.0f || lRec.dist == 0.0f)
                     return 0.0f;
 
 
                 const Color3f L_e = lRec.luminaire->eval(lRec);
-                return ((L_e * cosThetaSecond) / normSquared) / lRec.pdf;
+                return ((L_e * cosThetaSecond) / (lRec.dist * lRec.dist)) / lRec.pdf;
         }
 
         /**
