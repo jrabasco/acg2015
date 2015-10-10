@@ -93,8 +93,8 @@ public:
                 if (doesIntersect && !its.mesh->isLuminaire())
                     return Color3f(0.0f);
 
-                const float cosThetaSecond = lRec.d.dot(lRec.n);
-                const bool doesLightPointsTowardsRef = cosThetaSecond < 0.0f;
+                const float cosThetaSecond = -lRec.d.dot(lRec.n);
+                const bool doesLightPointsTowardsRef = cosThetaSecond > 0.0f;
                 if (!doesLightPointsTowardsRef)
                     return 0.0f;
 
@@ -106,7 +106,7 @@ public:
 
 
                 const Color3f L_e = lRec.luminaire->eval(lRec);
-                return ((L_e * fabs(cosThetaSecond)) / normSquared) / lRec.pdf;
+                return ((L_e * cosThetaSecond) / normSquared) / lRec.pdf;
         }
 
         /**
