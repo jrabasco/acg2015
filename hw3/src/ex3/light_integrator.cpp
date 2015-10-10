@@ -146,7 +146,7 @@ public:
                 BSDFQueryRecord bRec(its.toLocal(-ray.d), its.toLocal(lRec.d), ESolidAngle);
                 const Color3f f_r = bsdf->eval(bRec);
 
-                return f_r * sampledLight * fabs(cosThetaPrime);
+                return f_r * sampledLight * cosThetaPrime;
         }
 
         QString toString() const {
