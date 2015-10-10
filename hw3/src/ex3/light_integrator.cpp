@@ -62,8 +62,9 @@ public:
                 Point2f sample(_sample);
                 const std::vector<Luminaire *> &luminaires = scene->getLuminaires();
 
-                if (luminaires.size() == 0)
-                        throw NoriException("LightIntegrator::sampleLights(): No luminaires were defined!");
+                if (luminaires.size() == 0) {
+                    throw NoriException("LightIntegrator::sampleLights(): No luminaires were defined!");
+                }
 
                 // 1. Choose one luminaire at random
                 int luminaireIdx = rand() % luminaires.size();
