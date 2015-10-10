@@ -95,14 +95,15 @@ public:
                 const float cosThetaSecond = -lRec.d.dot(lRec.n);
                 const bool doesLightPointsTowardsRef = cosThetaSecond > 0;
                 if (!doesLightPointsTowardsRef) {
-                    return 0.0f;
+                    return Color3f(0.0f);
                 }
 
                 lRec.pdf = getMesh(lRec.luminaire)->pdf();
 
                 // 4. Return radiance emitted from luminaire multiplied by the appropriate terms G, V ...
-                if (lRec.pdf <= 0.0f || lRec.dist == 0.0f)
-                    return 0.0f;
+                if (lRec.pdf <= 0.0f || lRec.dist == 0.0f) {
+                    return Color3f(0.0f);
+                }
 
 
                 const Color3f L_e = lRec.luminaire->eval(lRec);
@@ -120,8 +121,9 @@ public:
 
                 /* Find the surface that is visible in the requested direction */
                 Intersection its;
-                if (!scene->rayIntersect(ray, its))
-                        return Color3f(0.0f);
+                if (!scene->rayIntersect(ray, its)) {
+                    return Color3f(0.0f);
+                }
 
                 const Mesh *mesh = its.mesh;
                 const BSDF *bsdf = mesh->getBSDF();
