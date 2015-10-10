@@ -138,7 +138,7 @@ public:
                 const Point2f sample(sampler->next2D());
                 Color3f sampledLight = sampleLights(scene, lRec, sample);
 
-                float cosThetaPrime = Frame::cosTheta(ray.d);
+                float cosThetaPrime = Frame::cosTheta(its.toLocal(lRec.d));
 
                 BSDFQueryRecord bRec(its.toLocal(-ray.d), its.toLocal(lRec.d), ESolidAngle);
                 const Color3f f_r = bsdf->eval(bRec);
