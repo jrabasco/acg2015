@@ -78,7 +78,7 @@ public:
                 // as well as the pdf of that point being found
                 // use Mesh::pdf to get the probability of choosing the point in Mesh::samplePosition
                 lRec = LuminaireQueryRecord(lRec.luminaire, lRec.ref, lRec.p, lRec.n);
-                const Ray3f shadowRay(lRec.ref, lRec.d);
+                const Ray3f shadowRay(lRec.ref, lRec.d, Epsilon, lRec.dist);
 
                 Intersection its;
                 const bool doesIntersect = scene->rayIntersect(shadowRay, its);
