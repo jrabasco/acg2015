@@ -1,0 +1,1 @@
+-j4 CXXFLAGS+='-DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT=1 -O2 -pthread -I/usr/include/OpenEXR -I/usr/include/libdrm'
