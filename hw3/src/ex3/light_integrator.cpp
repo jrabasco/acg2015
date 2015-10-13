@@ -62,8 +62,9 @@ public:
                 Point2f sample(_sample);
                 const std::vector<Luminaire *> &luminaires = scene->getLuminaires();
 
-                if (luminaires.size() == 0)
-                        throw NoriException("LightIntegrator::sampleLights(): No luminaires were defined!");
+                if (luminaires.size() == 0) {
+                    throw NoriException("LightIntegrator::sampleLights(): No luminaires were defined!");
+                }
 
                 // 1. Choose one luminaire at random
                 int luminaireIdx = rand() % luminaires.size();
@@ -76,33 +77,38 @@ public:
                 // 3. Compute geometry term G and visibility term on the luminaire's side (no cos(w) of the mesh side)
                 // as well as the pdf of that point being found
                 // use Mesh::pdf to get the probability of choosing the point in Mesh::samplePosition
-                const float x = lRec.p.x() - lRec.ref.x();
-                const float y = lRec.p.y() - lRec.ref.y();
-                const float z = lRec.p.z() - lRec.ref.z();
-                const float normSquared = Vector3f(x, y, z).squaredNorm();
-                lRec.dist = sqrtf(normSquared);
+                lRec = LuminaireQueryRecord(lRec.luminaire, lRec.ref, lRec.p, lRec.n);
+                const Ray3f shadowRay(lRec.ref, lRec.d, Epsilon, lRec.dist);
 
-                lRec.d = Vector3f(x / lRec.dist, y / lRec.dist, z / lRec.dist);
-                const Ray3f shadowRay(lRec.ref, lRec.d);
                 Intersection its;
                 const bool doesIntersect = scene->rayIntersect(shadowRay, its);
-                if (!doesIntersect)
-                    return 0.0f;
+                if (!doesIntersect) {
+                        if (scene->hasEnvLuminaire()) {
+                               lRec = LuminaireQueryRecord(scene->getEnvLuminaire(), shadowRay);
+                               return lRec.luminaire->eval(lRec);
+                        } else {
+                            return Color3f(0.0f);
+                        }
+                } else if (!its.mesh->isLuminaire()) {
+                    return Color3f(0.0f);
+                }
 
-                const float cosThetaSecond = lRec.d.dot(lRec.n);
-                const bool doesLightPointsTowardsRef = cosThetaSecond < 0.0f;
-                if (!doesLightPointsTowardsRef)
-                    return 0.0f;
+                const float cosThetaSecond = -lRec.d.dot(lRec.n);
+                const bool doesLightPointsTowardsRef = cosThetaSecond > 0;
+                if (!doesLightPointsTowardsRef) {
+                    return Color3f(0.0f);
+                }
 
                 lRec.pdf = getMesh(lRec.luminaire)->pdf();
 
                 // 4. Return radiance emitted from luminaire multiplied by the appropriate terms G, V ...
-                if (lRec.pdf <= 0.0f || normSquared == 0.0f)
-                    return 0.0f;
+                if (lRec.pdf <= 0.0f || lRec.dist == 0.0f) {
+                    return Color3f(0.0f);
+                }
 
 
                 const Color3f L_e = lRec.luminaire->eval(lRec);
-                return ((L_e * fabs(cosThetaSecond)) / normSquared) / lRec.pdf;
+                return ((L_e * cosThetaSecond) / (lRec.dist * lRec.dist)) / lRec.pdf;
         }
 
         /**
@@ -116,23 +122,31 @@ public:
 
                 /* Find the surface that is visible in the requested direction */
                 Intersection its;
-                if (!scene->rayIntersect(ray, its))
-                        return Color3f(0.0f);
+                if (!scene->rayIntersect(ray, its)) {
+                    return Color3f(0.0f);
+                }
 
                 const Mesh *mesh = its.mesh;
                 const BSDF *bsdf = mesh->getBSDF();
-                const Point2f sample(sampler->next2D());
+
+                /* In case we hit a luminaire directly. */
+                if (mesh->isLuminaire()) {
+                    const Luminaire *luminaire = its.mesh->getLuminaire();
+                    return luminaire->eval(LuminaireQueryRecord(luminaire, ray.o, its.p, its.shFrame.n));
+                }
+
 
                 LuminaireQueryRecord lRec;
                 lRec.ref = its.p;
+                const Point2f sample(sampler->next2D());
                 Color3f sampledLight = sampleLights(scene, lRec, sample);
 
-                float cosThetaPrime = its.shFrame.n.dot(its.toLocal(lRec.d));
+                float cosThetaPrime = Frame::cosTheta(its.toLocal(lRec.d));
 
                 BSDFQueryRecord bRec(its.toLocal(-ray.d), its.toLocal(lRec.d), ESolidAngle);
                 const Color3f f_r = bsdf->eval(bRec);
 
-                return f_r * sampledLight * fabs(cosThetaPrime);
+                return f_r * sampledLight * cosThetaPrime;
         }
 
         QString toString() const {
