@@ -89,7 +89,7 @@ public:
                         } else {
                             return Color3f(0.0f);
                         }
-                } else if (!its.mesh->isLuminaire()) {
+                } else if (!its.mesh->isLuminaire() || (its.mesh->getLuminaire() != lRec.luminaire)) {
                     return Color3f(0.0f);
                 }
 
@@ -108,7 +108,7 @@ public:
 
 
                 const Color3f L_e = lRec.luminaire->eval(lRec);
-                return ((L_e * cosThetaSecond) / (lRec.dist * lRec.dist)) / lRec.pdf;
+                return ((L_e * cosThetaSecond) / (lRec.dist * lRec.dist)) / (lRec.pdf/luminaires.size());
         }
 
         /**
