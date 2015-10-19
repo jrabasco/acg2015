@@ -108,44 +108,63 @@ public:
                 Intersection its;
                 Color3f result(0.0f), throughput(1.0f);
 
-                // Step 1: Intersect the ray with the scene. Return environment
-                // luminaire if no hit.
-                if(!scene->rayIntersect(ray, its)) {
-                    // TODO: Write (obvious since it's in the assignment) justification for that in the report
-                    if(!scene->hasEnvLuminaire()){
-                        // TODO: Why does this happen?
-                        return result;
+                float Q = 0.8; // for Russian Roulette
+
+                for(int n = 0; ; ++n) {
+                    // Step 1: Intersect the ray with the scene. Return environment luminaire if no hit.
+                    if(!scene->rayIntersect(ray, its)) {
+                        // TODO: Write (obvious since it's in the assignment) justification for that in the report
+                        // TODO: Why is this false sometimes?
+                        if(scene->hasEnvLuminaire()) {
+                            LuminaireQueryRecord envRec(scene->getEnvLuminaire(), ray);
+                            result += throughput * envRec.luminaire->eval(envRec);
+                        }
+
+                        break;
+
                     }
-                    LuminaireQueryRecord envRec(scene->getEnvLuminaire(), ray);
-                    return envRec.luminaire->eval(envRec);
+
+                    // Step 2: Check if the ray hit a light source.
+                    if(its.mesh->isLuminaire()) {
+                        // TODO: Write (relatively obvious IMHO) justification for that in the report
+                        LuminaireQueryRecord meshRec(its.mesh->getLuminaire(), ray.o, its.p, its.shFrame.n);
+                        result += throughput * meshRec.luminaire->eval(meshRec);
+                        break;
+                    }
+
+                    // Step 3: Direct illumination sampling. (i.e. n = 0)
+                    LuminaireQueryRecord lRec(its.p);
+                    Color3f directColor = sampleLights(scene, lRec, sampler->next2D());
+                    Vector3f w_i = its.toLocal(-ray.d); // Invert the ray since we want w_i going *from* the point
+                    // N.B.: BSDFQueryRecord works in local coords while this function works in global coords,
+                    //       so we must convert every time.
+                    BSDFQueryRecord bsdfRec(w_i, its.toLocal(lRec.d), ESolidAngle);
+                    // TODO is this missing anything?
+                    result += throughput * directColor * its.mesh->getBSDF()->eval(bsdfRec);
+
+                    // Step 4: Recursively sample indirect illumination (i.e. n > 0)
+                    BSDFQueryRecord bsdfSampleRec(w_i);
+                    Color3f sampledColor = its.mesh->getBSDF()->sample(bsdfSampleRec, sampler->next2D());
+                    if(sampledColor.getLuminance() == 0) {
+                        // bail out early if sampledColor is black, no point in continuing with throughput == 0
+                        // without this check it gets really really slow
+                        break;
+                    }
+
+                    // Now we update the parameters for the ""recursion"" step
+                    throughput *= sampledColor;
+                    ray = Ray3f(its.p, its.shFrame.toWorld(bsdfSampleRec.wo));
+
+                    // Step 5. Apply Russian Roulette after 2 main bounces.
+                    if(n > 2) {
+                        float random = sampler->next1D();
+                        if( random > Q ) {
+                            throughput /= (1 - Q);
+                        } else {
+                            break;
+                        }
+                    }
                 }
-
-
-                // Step 2: Check if the ray hit a light source.
-                if(its.mesh->isLuminaire()) {
-                    // TODO: Write (relatively obvious IMHO) justification for that in the report
-                    LuminaireQueryRecord meshRec(its.mesh->getLuminaire(), ray.o, its.p, its.shFrame.n);
-                    return meshRec.luminaire->eval(meshRec);
-                }
-
-                // Step 3: Direct illumination sampling.
-                LuminaireQueryRecord lRec(its.p);
-                Color3f directColor = sampleLights(scene, lRec, sampler->next2D());
-                BSDFQueryRecord bsdfRec(
-                    // Convert w_i and w_o to local coordinates as wanted by BSDFQueryRecord
-                    its.toLocal(-ray.d), // Invert the ray since we want w_i going *from* the point
-                    its.toLocal(lRec.d), // w_o is already *to* the light
-                    ESolidAngle
-                );
-                return directColor * its.mesh->getBSDF()->eval(bsdfRec);
-                // TODO
-
-                // Step 4: Recursively sample indirect illumination
-                // TODO
-
-                // Step 5. Apply Russian Roulette after 2 main bounces.
-                // TODO
-
                 return result;
         }
 
