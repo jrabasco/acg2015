@@ -114,8 +114,12 @@ public:
                 // luminaire if no hit.
                 if(!scene->rayIntersect(ray, its)) {
                     // TODO: Write (obvious since it's in the assignment) justification for that in the report
+                    if(!scene->hasEnvLuminaire()){
+                        // TODO: Why does this happen?
+                        return result;
+                    }
                     LuminaireQueryRecord envRec(scene->getEnvLuminaire(), ray);
-                    return scene->getEnvLuminaire()->eval(envRec);
+                    return envRec.luminaire->eval(envRec);
                 }
 
 
@@ -123,12 +127,13 @@ public:
                 if(its.mesh->isLuminaire()) {
                     // TODO: Write (relatively obvious IMHO) justification for that in the report
                     LuminaireQueryRecord meshRec(its.mesh->getLuminaire(), ray.o, its.p, its.shFrame.n);
-                    return its.mesh->getLuminaire()->eval(meshRec);
+                    return meshRec.luminaire->eval(meshRec);
                 }
 
                 // Step 3: Direct illumination sampling.
                 LuminaireQueryRecord lRec(its.p);
                 Color3f directColor = sampleLights(scene, lRec, sampler->next2D());
+                result = directColor;
                 // TODO
 
                 // Step 4: Recursively sample indirect illumination
