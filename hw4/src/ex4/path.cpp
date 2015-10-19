@@ -20,7 +20,7 @@ NORI_NAMESPACE_BEGIN
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // put your group number here!
-#define GROUP_NUMBER 0
+#define GROUP_NUMBER 6
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 GROUP_NAMESPACE_BEGIN()
@@ -112,14 +112,28 @@ public:
 
                 // Step 1: Intersect the ray with the scene. Return environment
                 // luminaire if no hit.
+                if(!scene->rayIntersect(ray, its)) {
+                    // TODO: Write (obvious since it's in the assignment) justification for that in the report
+                    return scene->getEnvLuminaire()->getColor();
+                }
+
 
                 // Step 2: Check if the ray hit a light source.
+                if(its.mesh->isLuminaire()) {
+                    // TODO: Write (relatively obvious IMHO) justification for that in the report
+                    return its.mesh->getLuminaire()->getColor();
+                }
 
                 // Step 3: Direct illumination sampling.
+                LuminaireQueryRecord lRec(its.p);
+                Color3f directColor = sampleLights(scene, lRec, sampler->next2D());
+                // TODO
 
                 // Step 4: Recursively sample indirect illumination
+                // TODO
 
                 // Step 5. Apply Russion Roullette after 2 main bounces.
+                // TODO
 
                 return result;
         }
