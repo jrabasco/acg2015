@@ -108,8 +108,6 @@ public:
                 Intersection its;
                 Color3f result(0.0f), throughput(1.0f);
 
-                // TODO implement a path tracer
-
                 // Step 1: Intersect the ray with the scene. Return environment
                 // luminaire if no hit.
                 if(!scene->rayIntersect(ray, its)) {
@@ -133,7 +131,13 @@ public:
                 // Step 3: Direct illumination sampling.
                 LuminaireQueryRecord lRec(its.p);
                 Color3f directColor = sampleLights(scene, lRec, sampler->next2D());
-                result = directColor;
+                BSDFQueryRecord bsdfRec(
+                    // Convert w_i and w_o to local coordinates as wanted by BSDFQueryRecord
+                    its.toLocal(-ray.d), // Invert the ray since we want w_i going *from* the point
+                    its.toLocal(lRec.d), // w_o is already *to* the light
+                    ESolidAngle
+                );
+                return directColor * its.mesh->getBSDF()->eval(bsdfRec);
                 // TODO
 
                 // Step 4: Recursively sample indirect illumination
