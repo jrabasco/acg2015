@@ -104,13 +104,14 @@ public:
         }
 
         Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &_ray) const {
+                float Q = 1; // for Russian Roulette, set to 1 to disable
+
+                // Variables used for recursion (though it's not technically recursion)
                 Ray3f ray(_ray);
-                Intersection its;
                 Color3f result(0.0f), throughput(1.0f);
 
-                float Q = 0.8; // for Russian Roulette
-
                 for(int n = 0; ; ++n) {
+                    Intersection its;
                     // Step 1: Intersect the ray with the scene. Return environment luminaire if no hit.
                     if(!scene->rayIntersect(ray, its)) {
                         // TODO: Write (obvious since it's in the assignment) justification for that in the report
@@ -128,6 +129,7 @@ public:
                     if(its.mesh->isLuminaire()) {
                         // TODO: Write (relatively obvious IMHO) justification for that in the report
                         LuminaireQueryRecord meshRec(its.mesh->getLuminaire(), ray.o, its.p, its.shFrame.n);
+                        // TODO: This line causes a metric tone of light noise in the resulting image, something's wrong
                         result += throughput * meshRec.luminaire->eval(meshRec);
                         break;
                     }
@@ -139,8 +141,10 @@ public:
                     // N.B.: BSDFQueryRecord works in local coords while this function works in global coords,
                     //       so we must convert every time.
                     BSDFQueryRecord bsdfRec(w_i, its.toLocal(lRec.d), ESolidAngle);
-                    // TODO is this missing anything?
-                    result += throughput * directColor * its.mesh->getBSDF()->eval(bsdfRec);
+                    // Create a ray from the light-intersecting info
+                    Ray3f transmittanceRay(lRec.ref, lRec.d, 0, lRec.dist);
+                    // TODO: I think this is missing the magical G thingy
+                    result += throughput * scene->evalTransmittance(transmittanceRay, sampler) * directColor * its.mesh->getBSDF()->eval(bsdfRec);
 
                     // Step 4: Recursively sample indirect illumination (i.e. n > 0)
                     BSDFQueryRecord bsdfSampleRec(w_i);
@@ -150,15 +154,13 @@ public:
                         // without this check it gets really really slow
                         break;
                     }
-
-                    // Now we update the parameters for the ""recursion"" step
                     throughput *= sampledColor;
                     ray = Ray3f(its.p, its.shFrame.toWorld(bsdfSampleRec.wo));
 
                     // Step 5. Apply Russian Roulette after 2 main bounces.
                     if(n > 2) {
                         float random = sampler->next1D();
-                        if( random > Q ) {
+                        if(random > Q) {
                             throughput /= (1 - Q);
                         } else {
                             break;
