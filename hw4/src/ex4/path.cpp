@@ -114,14 +114,16 @@ public:
                 // luminaire if no hit.
                 if(!scene->rayIntersect(ray, its)) {
                     // TODO: Write (obvious since it's in the assignment) justification for that in the report
-                    return scene->getEnvLuminaire()->getColor();
+                    LuminaireQueryRecord envRec(scene->getEnvLuminaire(), ray);
+                    return scene->getEnvLuminaire()->eval(envRec);
                 }
 
 
                 // Step 2: Check if the ray hit a light source.
                 if(its.mesh->isLuminaire()) {
                     // TODO: Write (relatively obvious IMHO) justification for that in the report
-                    return its.mesh->getLuminaire()->getColor();
+                    LuminaireQueryRecord meshRec(its.mesh->getLuminaire(), ray.o, its.p, its.shFrame.n);
+                    return its.mesh->getLuminaire()->eval(meshRec);
                 }
 
                 // Step 3: Direct illumination sampling.
@@ -132,7 +134,7 @@ public:
                 // Step 4: Recursively sample indirect illumination
                 // TODO
 
-                // Step 5. Apply Russion Roullette after 2 main bounces.
+                // Step 5. Apply Russian Roulette after 2 main bounces.
                 // TODO
 
                 return result;
