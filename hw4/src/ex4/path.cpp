@@ -43,16 +43,16 @@ public:
         /**
          * \brief Directly sample the lights, providing a sample weighted by 1/pdf
          * where pdf is the probability of sampling that given sample
-         * 
+         *
          * \param scene
          * the scene to work with
-         * 
+         *
          * \param lRec
          * the luminaire information storage
-         * 
+         *
          * \param _sample
          * the 2d uniform sample
-         * 
+         *
          * \return the sampled light radiance including its geometric, visibility and pdf weights
          */
         inline Color3f sampleLights(const Scene *scene, LuminaireQueryRecord &lRec, const Point2f &_sample) const {
@@ -88,7 +88,7 @@ public:
                         if (scene->rayIntersect(Ray3f(lRec.ref, lRec.d, Epsilon, lRec.dist * (1 - 1e-4f))))
                                 return Color3f(0.0f);
                         // 6. Geometry term on luminaire's side
-                        // Visiblity + Geometric term on the luminaire's side 
+                        // Visiblity + Geometric term on the luminaire's side
                         //      G(x, x', w, w') = ( cos(w) cos(w') ) / ||x - x'||^2
                         float G_lum = dp / dist2;
 
@@ -116,7 +116,7 @@ public:
                         // TODO: Write (obvious since it's in the assignment) justification for that in the report
                         if(scene->hasEnvLuminaire()) {
                             LuminaireQueryRecord envRec(scene->getEnvLuminaire(), ray);
-                            result += throughput * envRec.luminaire->eval(envRec);
+                            result = throughput * envRec.luminaire->eval(envRec);
                         }
 
                         break;
