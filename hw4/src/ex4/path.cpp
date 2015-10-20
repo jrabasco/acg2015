@@ -43,16 +43,16 @@ public:
         /**
          * \brief Directly sample the lights, providing a sample weighted by 1/pdf
          * where pdf is the probability of sampling that given sample
-         * 
+         *
          * \param scene
          * the scene to work with
-         * 
+         *
          * \param lRec
          * the luminaire information storage
-         * 
+         *
          * \param _sample
          * the 2d uniform sample
-         * 
+         *
          * \return the sampled light radiance including its geometric, visibility and pdf weights
          */
         inline Color3f sampleLights(const Scene *scene, LuminaireQueryRecord &lRec, const Point2f &_sample) const {
@@ -88,7 +88,7 @@ public:
                         if (scene->rayIntersect(Ray3f(lRec.ref, lRec.d, Epsilon, lRec.dist * (1 - 1e-4f))))
                                 return Color3f(0.0f);
                         // 6. Geometry term on luminaire's side
-                        // Visiblity + Geometric term on the luminaire's side 
+                        // Visiblity + Geometric term on the luminaire's side
                         //      G(x, x', w, w') = ( cos(w) cos(w') ) / ||x - x'||^2
                         float G_lum = dp / dist2;
 
@@ -117,7 +117,7 @@ public:
                         // TODO: Why is this false sometimes?
                         if(scene->hasEnvLuminaire()) {
                             LuminaireQueryRecord envRec(scene->getEnvLuminaire(), ray);
-                            result += throughput * envRec.luminaire->eval(envRec);
+                            result = throughput * envRec.luminaire->eval(envRec);
                         }
 
                         break;
@@ -129,7 +129,7 @@ public:
                         // TODO: Write (relatively obvious IMHO) justification for that in the report
                         LuminaireQueryRecord meshRec(its.mesh->getLuminaire(), ray.o, its.p, its.shFrame.n);
                         // TODO: This line causes a metric tone of light noise in the resulting image, something's wrong
-                        result += throughput * meshRec.luminaire->eval(meshRec);
+                        result = throughput * meshRec.luminaire->eval(meshRec);
                         break;
                     }
 
@@ -143,7 +143,7 @@ public:
                     // Create a ray from the light-intersecting info
                     Ray3f transmittanceRay(lRec.ref, lRec.d, 0, lRec.dist);
                     // TODO: I think this is missing the magical G thingy
-                    result += throughput * scene->evalTransmittance(transmittanceRay, sampler) * directColor * its.mesh->getBSDF()->eval(bsdfRec);
+                    result = throughput * scene->evalTransmittance(transmittanceRay, sampler) * directColor * its.mesh->getBSDF()->eval(bsdfRec);
 
                     // Step 4: Recursively sample indirect illumination (i.e. n > 0)
                     BSDFQueryRecord bsdfSampleRec(w_i);
