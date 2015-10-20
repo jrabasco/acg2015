@@ -130,7 +130,8 @@ public:
                     if(its.mesh->isLuminaire()) {
                         // TODO: Write justification for that in the report
                         LuminaireQueryRecord lRec(its.mesh->getLuminaire(), ray.o, its.p, its.shFrame.n);
-                        light = lRec.luminaire->eval(lRec);
+                        BSDFQueryRecord bsdfRec(w_i, its.toLocal(lRec.d), ESolidAngle);
+                        light = its.mesh->getBSDF()->eval(bsdfRec)*lRec.luminaire->eval(lRec);
                     } else {
                         // Step 3: Direct illumination sampling. (i.e. n = 0)
                         // N.B.: BSDFQueryRecord works in local coords while this function works in global coords,
