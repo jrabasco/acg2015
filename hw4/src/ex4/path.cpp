@@ -148,12 +148,11 @@ public:
                     // Step 4: Recursively sample indirect illumination (i.e. n > 0)
                     BSDFQueryRecord bsdfSampleRec(w_i);
                     Color3f sampledColor = its.mesh->getBSDF()->sample(bsdfSampleRec, sampler->next2D());
-                    if(sampledColor.getLuminance() == 0) {
-                        // bail out early if sampledColor is black, no point in continuing with throughput == 0
-                        // without this check it gets really really slow
-                        break;
+                    if (!(sampledColor.array() != 0).any()) {
+                        return Color3f(0.0f);
                     }
-                    throughput *= sampledColor;
+
+                    throughput *= sampledColor * std::abs(Frame::cosTheta(bsdfSampleRec.wo));
                     ray = Ray3f(its.p, its.shFrame.toWorld(bsdfSampleRec.wo));
 
                     // Step 5. Apply Russian Roulette after 2 main bounces.
