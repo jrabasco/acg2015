@@ -114,49 +114,47 @@ public:
                     // Step 1: Intersect the ray with the scene. Return environment luminaire if no hit.
                     if(!scene->rayIntersect(ray, its)) {
                         // TODO: Write (obvious since it's in the assignment) justification for that in the report
-                        // TODO: Why is this false sometimes?
                         if(scene->hasEnvLuminaire()) {
                             LuminaireQueryRecord envRec(scene->getEnvLuminaire(), ray);
                             result += throughput * envRec.luminaire->eval(envRec);
                         }
 
                         break;
-
                     }
+
+                    // Invert the ray since we want w_i going *from* the point
+                    Vector3f w_i = its.toLocal(-ray.d);
 
                     // Step 2: Check if the ray hit a light source.
+                    Color3f light;
                     if(its.mesh->isLuminaire()) {
-                        // TODO: Write (relatively obvious IMHO) justification for that in the report
-                        LuminaireQueryRecord meshRec(its.mesh->getLuminaire(), ray.o, its.p, its.shFrame.n);
-                        // TODO: This line causes a metric tone of light noise in the resulting image, something's wrong
-                        result += throughput * meshRec.luminaire->eval(meshRec);
-                        break;
+                        // TODO: Write justification for that in the report
+                        LuminaireQueryRecord lRec(its.mesh->getLuminaire(), ray.o, its.p, its.shFrame.n);
+                        light = lRec.luminaire->eval(lRec);
+                    } else {
+                        // Step 3: Direct illumination sampling. (i.e. n = 0)
+                        // N.B.: BSDFQueryRecord works in local coords while this function works in global coords,
+                        //       so we must convert every time.
+                        LuminaireQueryRecord lRec(its.p);
+                        Color3f directColor = sampleLights(scene, lRec, sampler->next2D());
+                        BSDFQueryRecord bsdfRec(w_i, its.toLocal(lRec.d), ESolidAngle);
+                        light = its.mesh->getBSDF()->eval(bsdfRec) * directColor;
                     }
 
-                    // Step 3: Direct illumination sampling. (i.e. n = 0)
-                    LuminaireQueryRecord lRec(its.p);
-                    Color3f directColor = sampleLights(scene, lRec, sampler->next2D());
-                    Vector3f w_i = its.toLocal(-ray.d); // Invert the ray since we want w_i going *from* the point
-                    // N.B.: BSDFQueryRecord works in local coords while this function works in global coords,
-                    //       so we must convert every time.
-                    BSDFQueryRecord bsdfRec(w_i, its.toLocal(lRec.d), ESolidAngle);
-                    // Create a ray from the light-intersecting info
-                    Ray3f transmittanceRay(lRec.ref, lRec.d, 0, lRec.dist);
-                    // TODO: I think this is missing the magical G thingy
-                    result += throughput * scene->evalTransmittance(transmittanceRay, sampler) * directColor * its.mesh->getBSDF()->eval(bsdfRec);
+                    result += throughput * light;
 
                     // Step 4: Recursively sample indirect illumination (i.e. n > 0)
                     BSDFQueryRecord bsdfSampleRec(w_i);
                     Color3f sampledColor = its.mesh->getBSDF()->sample(bsdfSampleRec, sampler->next2D());
                     if (!(sampledColor.array() != 0).any()) {
-                        return Color3f(0.0f);
+                        break;
                     }
 
-                    throughput *= sampledColor * std::abs(Frame::cosTheta(bsdfSampleRec.wo));
+                    throughput /= sampledColor; // TODO add G here! this is too large
                     ray = Ray3f(its.p, its.shFrame.toWorld(bsdfSampleRec.wo));
 
                     // Step 5. Apply Russian Roulette after 2 main bounces.
-                    if(n > 2) {
+                    if(n >= 2) {
                         float random = sampler->next1D();
                         if(random > Q) {
                             throughput /= (1 - Q);
