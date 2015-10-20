@@ -150,7 +150,7 @@ public:
                         break;
                     }
 
-                    throughput /= sampledColor; // TODO add G here! this is too large
+                    throughput *= sampledColor; // TODO add G here! this is too large
                     ray = Ray3f(its.p, its.shFrame.toWorld(bsdfSampleRec.wo));
 
                     // Step 5. Apply Russian Roulette after 2 main bounces.
