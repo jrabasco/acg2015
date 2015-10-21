@@ -104,7 +104,7 @@ public:
         }
 
         Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &_ray) const {
-                float Q = 1.0f; // for Russian Roulette, set to 1 to disable
+                float Q = 0.2f; // for Russian Roulette, set to 1 to disable
 
                 // Variables used for recursion (though it's not technically recursion)
                 Ray3f ray(_ray);
@@ -162,7 +162,7 @@ public:
                     if(n >= SAMPLE_DEPTH) {
                         float random = sampler->next1D();
                         if(random > Q) {
-                            throughput /= (1 - Q);
+                            throughput *= (1 - Q);
                         } else {
                             break;
                         }
@@ -176,7 +176,7 @@ public:
         }
 
 private:
-    static const int SAMPLE_DEPTH = 3;
+    static const int SAMPLE_DEPTH = 2;
 };
 
 GROUP_NAMESPACE_END
