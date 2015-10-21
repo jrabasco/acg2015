@@ -30,6 +30,7 @@ GROUP_NAMESPACE_BEGIN()
 class PathTracer : public Integrator {
 public:
 
+
         PathTracer(const PropertyList &) {
         }
 
@@ -103,59 +104,62 @@ public:
         }
 
         Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &_ray) const {
-                float Q = 1; // for Russian Roulette, set to 1 to disable
+                float Q = 1.0f; // for Russian Roulette, set to 1 to disable
 
                 // Variables used for recursion (though it's not technically recursion)
                 Ray3f ray(_ray);
                 Color3f result(0.0f), throughput(1.0f);
 
-                for(int n = 0; ; ++n) {
+                for(int n = 1; ; ++n) {
                     Intersection its;
-                    // Step 1: Intersect the ray with the scene. Return environment luminaire if no hit.
+                    // STEP 1
+                    // Intersect the ray with the scene. Return environment luminaire if no hit.
                     if(!scene->rayIntersect(ray, its)) {
                         // TODO: Write (obvious since it's in the assignment) justification for that in the report
                         if(scene->hasEnvLuminaire()) {
                             LuminaireQueryRecord envRec(scene->getEnvLuminaire(), ray);
-                            result = throughput * envRec.luminaire->eval(envRec);
+                            result += throughput * envRec.luminaire->eval(envRec);
                         }
 
                         break;
                     }
 
                     // Invert the ray since we want w_i going *from* the point
-                    Vector3f w_i = its.toLocal(-ray.d);
 
-                    // Step 2: Check if the ray hit a light source.
-                    Color3f light;
-                    if(its.mesh->isLuminaire()) {
-                        // TODO: Write justification for that in the report
+
+                    // STEP 2
+                    // In case w_i intersects with a luminaire, we take it into account only in case this is the first bounce
+                    // Otherwise, we have already taken it into account during the last direct lighting phase.
+
+                    if(its.mesh->isLuminaire() && n == 1) {
                         LuminaireQueryRecord lRec(its.mesh->getLuminaire(), ray.o, its.p, its.shFrame.n);
-                        BSDFQueryRecord bsdfRec(w_i, its.toLocal(lRec.d), ESolidAngle);
-                        light = its.mesh->getBSDF()->eval(bsdfRec)*lRec.luminaire->eval(lRec);
-                    } else {
-                        // Step 3: Direct illumination sampling. (i.e. n = 0)
-                        // N.B.: BSDFQueryRecord works in local coords while this function works in global coords,
-                        //       so we must convert every time.
-                        LuminaireQueryRecord lRec(its.p);
-                        Color3f directColor = sampleLights(scene, lRec, sampler->next2D());
-                        BSDFQueryRecord bsdfRec(w_i, its.toLocal(lRec.d), ESolidAngle);
-                        light = its.mesh->getBSDF()->eval(bsdfRec) * directColor;
+                        result += throughput * lRec.luminaire->eval(lRec);
                     }
 
-                    result += throughput * light;
+                    // STEP 3
+                    // Compute direct lighting on the intersection point by sampling the lights
+                    LuminaireQueryRecord lRec(its.p);
+                    Vector3f w_i = its.toLocal(-ray.d);
+                    Color3f directColor = sampleLights(scene, lRec, sampler->next2D());
+                    BSDFQueryRecord bsdfRec(w_i, its.toLocal(lRec.d), ESolidAngle);
+                    result += throughput * its.mesh->getBSDF()->eval(bsdfRec) * directColor * std::abs(Frame::cosTheta(bsdfRec.wo));
 
-                    // Step 4: Recursively sample indirect illumination (i.e. n > 0)
+
+                    // STEP 4
+                    // Sample the BSDF to get compute the next direction of the path
                     BSDFQueryRecord bsdfSampleRec(w_i);
                     Color3f sampledColor = its.mesh->getBSDF()->sample(bsdfSampleRec, sampler->next2D());
-                    if (!(sampledColor.array() != 0).any()) {
+
+                    // In case we sampled 0x000000 or to avoid division by 0
+                    if ((sampledColor.array() == 0).all() || its.mesh->pdf() == 0) {
                         break;
                     }
 
-                    throughput *= sampledColor; // TODO add G here! this is too large
+                    throughput *= sampledColor;
                     ray = Ray3f(its.p, its.shFrame.toWorld(bsdfSampleRec.wo));
 
                     // Step 5. Apply Russian Roulette after 2 main bounces.
-                    if(n >= 2) {
+                    if(n >= SAMPLE_DEPTH) {
                         float random = sampler->next1D();
                         if(random > Q) {
                             throughput /= (1 - Q);
@@ -170,6 +174,9 @@ public:
         QString toString() const {
                 return "PathTracer[]";
         }
+
+private:
+    static const int SAMPLE_DEPTH = 3;
 };
 
 GROUP_NAMESPACE_END
