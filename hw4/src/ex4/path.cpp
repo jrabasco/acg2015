@@ -162,7 +162,7 @@ public:
                     if(n >= SAMPLE_DEPTH) {
                         float random = sampler->next1D();
                         if(random > Q) {
-                            throughput *= (1 - Q);
+                            throughput /= (1 - Q);
                         } else {
                             break;
                         }
