@@ -104,7 +104,7 @@ public:
         }
 
         Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &_ray) const {
-                float Q = 0.2f; // for Russian Roulette, set to 1 to disable
+                float Q = 1.0f; // for Russian Roulette, set to 1 to disable
 
                 // Variables used for recursion (though it's not technically recursion)
                 Ray3f ray(_ray);
