@@ -60,7 +60,7 @@
 	<mesh type="obj">
 		<string name="filename" value="meshes/cbox_6.obj"/>
 		<transform name="toWorld">
-                         <translate value="100, -164.5, 100"/>
+        	<translate value="100, -164.5, 100"/>
         </transform>
 
 		<bsdf type="diffuse">
@@ -71,75 +71,13 @@
 			<color name="radiance" value="17, 11.8, 4"/>
 		</luminaire>
 	</mesh>
-	
-	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_7.obj"/>
-		<transform name="toWorld">
-        	<translate value="-55, 0, 50"/>
-        	<scale value="1,0.4,1"/>
-        </transform>
-
-		<bsdf type="diffuse">
-			<color name="albedo" value="0.76, 0.75, 0.5"/>
-		</bsdf>
-		<luminaire type="area">
-			<color name="radiance" value="17, 11.8, 4"/>
-		</luminaire>
-	</mesh>
-
-	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_8.obj"/>
-		<transform name="toWorld">
-        	<translate value="54, 0, 256"/>
-        	<scale value="1,0.4,1"/>
-        </transform>
-
-		<bsdf type="diffuse">
-			<color name="albedo" value="0.76, 0.75, 0.5"/>
-		</bsdf>
-		<luminaire type="area">
-			<color name="radiance" value="17, 11.8, 4"/>
-		</luminaire>
-	</mesh>
-
-	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_9.obj"/>
-		<transform name="toWorld">
-        	<translate value="255, 0, 150"/>
-        	<scale value="1,0.4,1"/>
-        </transform>
-
-		<bsdf type="diffuse">
-			<color name="albedo" value="0.76, 0.75, 0.5"/>
-		</bsdf>
-		<luminaire type="area">
-			<color name="radiance" value="17, 11.8, 4"/>
-		</luminaire>
-	</mesh>
-
-	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_10.obj"/>
-		<transform name="toWorld">
-         	<translate value="146, 0, -54"/>
-         	<scale value="1,0.4,1"/>
-        </transform>
-
-		<bsdf type="diffuse">
-			<color name="albedo" value="0.76, 0.75, 0.5"/>
-		</bsdf>
-
-		<luminaire type="area">
-			<color name="radiance" value="17, 11.8, 4"/>
-		</luminaire>
-	</mesh>
 
 	<!-- box -->
-
 	<mesh type="obj">
 		<string name="filename" value="meshes/cbox_7.obj"/>
 		<transform name="toWorld">
         	<translate value="100, 0, 100"/>
-        	<scale value="1,0.4,1"/>
+        	<scale value="1,0.7,1"/>
         </transform>
 
 		<bsdf type="diffuse">
@@ -151,7 +89,7 @@
 		<string name="filename" value="meshes/cbox_8.obj"/>
 		<transform name="toWorld">
         	<translate value="100, 0, 100"/>
-        	<scale value="1,0.4,1"/>
+        	<scale value="1,0.7,1"/>
         </transform>
 
 		<bsdf type="diffuse">
@@ -163,7 +101,7 @@
 		<string name="filename" value="meshes/cbox_9.obj"/>
 		<transform name="toWorld">
         	<translate value="100, 0, 100"/>
-        	<scale value="1,0.4,1"/>
+        	<scale value="1,0.7,1"/>
         </transform>
 
 		<bsdf type="diffuse">
@@ -175,7 +113,7 @@
 		<string name="filename" value="meshes/cbox_10.obj"/>
 		<transform name="toWorld">
          	<translate value="100, 0, 100"/>
-         	<scale value="1,0.4,1"/>
+         	<scale value="1,0.7,1"/>
         </transform>
 
 		<bsdf type="diffuse">
@@ -183,6 +121,29 @@
 		</bsdf>
 	</mesh>
 
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_6.obj"/>
+		<transform name="toWorld">
+        	<translate value="-115, -50, 100"/>
+        </transform>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.76, 0.75, 0.5"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/sphere2.obj"/>
+		<transform name="toWorld">
+			<scale value="30, 30, 30"/>
+			<translate value="25, 50, 250"/>
+		</transform>
+		<bsdf type="phong">
+			<color name="kd" value="0, 0, 0"/>
+            <color name="ks" value="1.0, 1.0, 1.0"/>
+            <float name="n" value="500"/>
+		</bsdf>
+	</mesh>
 
 	<evaluator type="variance">
      <!-- computation reference, do not change! -->
