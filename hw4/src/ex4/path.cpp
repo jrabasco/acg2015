@@ -115,7 +115,6 @@ public:
                     // STEP 1
                     // Intersect the ray with the scene. Return environment luminaire if no hit.
                     if(!scene->rayIntersect(ray, its)) {
-                        // TODO: Write (obvious since it's in the assignment) justification for that in the report
                         if(scene->hasEnvLuminaire()) {
                             LuminaireQueryRecord envRec(scene->getEnvLuminaire(), ray);
                             result += throughput * envRec.luminaire->eval(envRec);
@@ -124,13 +123,9 @@ public:
                         break;
                     }
 
-                    // Invert the ray since we want w_i going *from* the point
-
-
                     // STEP 2
                     // In case w_i intersects with a luminaire, we take it into account only in case this is the first bounce
                     // Otherwise, we have already taken it into account during the last direct lighting phase.
-
                     if(its.mesh->isLuminaire() && n == 1) {
                         LuminaireQueryRecord lRec(its.mesh->getLuminaire(), ray.o, its.p, its.shFrame.n);
                         result += throughput * lRec.luminaire->eval(lRec);
