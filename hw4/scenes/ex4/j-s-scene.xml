@@ -16,47 +16,31 @@
 		<integer name="height" value="512"/>
 	</camera>
 	
-<!-- floor-->
+	<!-- some of these elements have been borrowed (and modified) from scene
+	cbox-path.xml, cbox-meshes-path.xml or ajax2-path.xml-->
+
 	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_0bis.obj"/>
+		<string name="filename" value="meshes/plane.obj"/>
+		<transform name="toWorld">
+			<scale value="5000, 1, 50000"/>
+		</transform>
+
 		<bsdf type="diffuse">
-			<color name="albedo" value="0.76, 0.75, 0.5"/>
+			<color name="albedo" value="0.76, 1, 1"/>
 		</bsdf>
 	</mesh>
-	
-<!-- top-->
+
 	<mesh type="obj">
 		<string name="filename" value="meshes/cbox_2a.obj"/>
+		<transform name="toWorld">
+			<scale value="10,1,10"/>
+			<translate value="-500, 0, 0"/>
+		</transform>
 		<bsdf type="diffuse">
-			<color name="albedo" value="0.76, 0.75, 0.5"/>
+			<color name="albedo" value="0.45, 0.76, 0.98"/>
 		</bsdf>
 	</mesh>
 	
-<!-- back-->
-	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_3.obj"/>
-		<bsdf type="diffuse">
-			<color name="albedo" value="0.76, 0.75, 0.5"/>
-		</bsdf>
-
-	</mesh>
-
- <!-- right -->
-	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_4.obj"/>	
-		<bsdf type="diffuse">
-			<color name="albedo" value="0.15, 0.98, 0.09"/>
-		</bsdf>
-	</mesh>
-	
-	<!-- left -->
-	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_5.obj"/>
-		<bsdf type="diffuse">
-			<color name="albedo" value="0.63, 0.06, 0.04"/>
-		</bsdf>
-	</mesh>
-	<!-- lights-->
 	<mesh type="obj">
 		<string name="filename" value="meshes/cbox_6.obj"/>
 		<transform name="toWorld">
@@ -68,11 +52,10 @@
 		</bsdf>
 		
 		<luminaire type="area">
-			<color name="radiance" value="17, 11.8, 4"/>
+			<color name="radiance" value="20, 20, 20"/>
 		</luminaire>
 	</mesh>
 
-	<!-- box -->
 	<mesh type="obj">
 		<string name="filename" value="meshes/cbox_7.obj"/>
 		<transform name="toWorld">
@@ -81,7 +64,7 @@
         </transform>
 
 		<bsdf type="diffuse">
-			<color name="albedo" value="0.76, 0.75, 0.5"/>
+			<color name="albedo" value="1, 0.2, 0.6"/>
 		</bsdf>
 	</mesh>
 
@@ -93,7 +76,7 @@
         </transform>
 
 		<bsdf type="diffuse">
-			<color name="albedo" value="0.76, 0.75, 0.5"/>
+			<color name="albedo" value="0.87, 0.42, 0.078"/>
 		</bsdf>
 	</mesh>
 
@@ -105,7 +88,7 @@
         </transform>
 
 		<bsdf type="diffuse">
-			<color name="albedo" value="0.76, 0.75, 0.5"/>
+			<color name="albedo" value="1.0, 0.1, 0.1"/>
 		</bsdf>
 	</mesh>
 
@@ -122,9 +105,9 @@
 	</mesh>
 
 	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_6.obj"/>
+		<string name="filename" value="meshes/cbox_6bis.obj"/>
 		<transform name="toWorld">
-        	<translate value="-115, -50, 100"/>
+        	<translate value="-150, -50, 100"/>
         </transform>
 
 		<bsdf type="diffuse">
@@ -135,8 +118,8 @@
 	<mesh type="obj">
 		<string name="filename" value="meshes/sphere2.obj"/>
 		<transform name="toWorld">
-			<scale value="30, 30, 30"/>
-			<translate value="25, 50, 250"/>
+			<scale value="40, 40, 40"/>
+			<translate value="20, 50, 270"/>
 		</transform>
 		<bsdf type="phong">
 			<color name="kd" value="0, 0, 0"/>
@@ -145,29 +128,13 @@
 		</bsdf>
 	</mesh>
 
-	<evaluator type="variance">
-     <!-- computation reference, do not change! -->
-     <string name="reference" value="cbox-ref.exr"/>
-     
-     <!-- export name(s) -->
-     <string name="output" value="cbox-path_plot_%1.png"/>
-     
-     <!-- plotting parameters, you can change! -->
-     <integer name="cuts" value="100"/>
-     <boolean name="absDiff" value="false"/>
-     <!-- <color name="barRatio" value="0.8, 0.5, 0.1"/> -->
-     <boolean name="semilogy" value="true"/>
-     <float name="logbase" value="10.0"/>
-     <float name="logmin" value="0.5"/>
-     <boolean name="stacked" value="false"/>
-     <boolean name="split" value="true"/>
-     <color name="redFill" value="254, 200, 200"/>
-     <color name="redPen" value="255, 98, 107"/>
-     <color name="greenFill" value="170, 255, 170"/>
-     <color name="greenPen" value="65, 195, 59"/>
-     <color name="blueFill" value="200, 200, 254"/>
-     <color name="bluePen" value="101, 101, 247"/>
-     <color name="alphaPen" value="255, 255, 255"/>
-     <color name="alphaFill" value="200, 200, 200"/>
-  </evaluator>
+	<mesh type="obj">
+		<string name="filename" value="meshes/teapot.obj"/>
+		<transform name="toWorld">
+			<translate value="280, 250, 350"/>
+		</transform>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.5, 1, 0"/>
+		</bsdf>
+	</mesh>
 </scene>
