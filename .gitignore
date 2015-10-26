@@ -23,7 +23,15 @@
 *.app
 
 *build-nori*
+*build-acg-physics*
 *.log
 *.user
 *.pdf
 *.exr
+
+#Vim
+
+*.swp
+
+#MacOS stuff
+*.DS_Store
