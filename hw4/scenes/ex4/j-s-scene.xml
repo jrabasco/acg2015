@@ -3,7 +3,7 @@
 	<integrator type="path"/>
 	
 	<sampler type="independent">
-		<integer name="sampleCount" value="64"/>
+		<integer name="sampleCount" value="256"/>
 	</sampler>
 
 	<camera type="perspective">
@@ -57,7 +57,7 @@
 	</mesh>
 
 	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_7.obj"/>
+		<string name="filename" value="meshes/cbox_7bis.obj"/>
 		<transform name="toWorld">
         	<translate value="100, 0, 100"/>
         	<scale value="1,0.7,1"/>
@@ -69,7 +69,7 @@
 	</mesh>
 
 	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_8.obj"/>
+		<string name="filename" value="meshes/cbox_8bis.obj"/>
 		<transform name="toWorld">
         	<translate value="100, 0, 100"/>
         	<scale value="1,0.7,1"/>
@@ -81,7 +81,7 @@
 	</mesh>
 
 	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_9.obj"/>
+		<string name="filename" value="meshes/cbox_9bis.obj"/>
 		<transform name="toWorld">
         	<translate value="100, 0, 100"/>
         	<scale value="1,0.7,1"/>
@@ -93,7 +93,7 @@
 	</mesh>
 
 	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_10.obj"/>
+		<string name="filename" value="meshes/cbox_10bis.obj"/>
 		<transform name="toWorld">
          	<translate value="100, 0, 100"/>
          	<scale value="1,0.7,1"/>
