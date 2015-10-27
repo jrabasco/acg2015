@@ -460,10 +460,8 @@ Mass_spring_viewer::compute_forces()
                 { -1.0,  0.0, 1.0 }
             };
 
-            static const vec2 origin(0,0);
-
             for (int i = 0; i < 4; ++i) {
-                float A = planes[i][0], B = planes[i][1], C = planes[i][2];
+                float A = planes[i][0], B = planes[i][1], C = -planes[i][2];
                 vec2 n(A, B);
                 vec2 p;
                 if (A != 0.0) {
@@ -472,15 +470,10 @@ Mass_spring_viewer::compute_forces()
                     p = vec2(0.0, C / B);
                 }
 
-                float d = fabs(A * particle->position[0] + B * particle->position[1] + C)/sqrtf(A * A + B * B);
+                float d = fabs(A * particle->position[0] + B * particle->position[1] - C)/sqrtf(A * A + B * B);
 
-                if (dot(p - particle->position, n) <= 0) {
-                    particle->force -= collision_stiffness_ * (d + particle_radius_) * n;
-                    //std::cout << d << std::endl;
-                    //std::cout << fabs(A * particle->position[0] + B * particle->position[1] + C) << std::endl;
-                    std::cout << particle->position[0] << "," << particle->position[1] << " : " << d <<std::endl;
-                } else if (d <= particle_radius_) {
-                    particle->force -= collision_stiffness_ * (d - particle_radius_) * n;
+                if (dot(p - particle->position, n) >= 0 || d <= particle_radius_) {
+                    particle->force += collision_stiffness_ * (d + particle_radius_) * n;
                 }
 
             }
