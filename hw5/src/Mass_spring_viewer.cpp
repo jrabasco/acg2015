@@ -364,7 +364,13 @@ void Mass_spring_viewer::time_integration(float dt)
             /** \todo (Part 1) Implement Euler integration scheme
              \li Hint: compute_forces() computes all forces for the current positions and velocities.
              */
-
+            compute_forces();
+            std::vector<Particle>& particles = body_.particles;
+            for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
+                particle->acceleration = particle->force / particle->mass;
+                particle->position += dt*particle->velocity;
+                particle->velocity += dt*particle->acceleration;
+            }
 
             break;
         }
@@ -414,43 +420,73 @@ Mass_spring_viewer::compute_forces()
         body_.particles[i].force = vec2(0,0);
 
 
-    /** \todo (Part 1) Implement center force
-     */
-    if (external_force_ == Center)
-    {
+    std::vector<Particle>& particles = body_.particles;
+    for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
 
-    }
-
-
-    /** \todo (Part 1) Implement damping force
-     \li The damping coefficient is given as member damping_
-     */
-
+        /** \todo (Part 1) Implement center force
+         */
+        if (external_force_ == Center)
+        {
+            static const float c = 20.0;
+            particle->force -= c * particle->position;
+        }
 
 
-    /** \todo (Part 1) Implement gravitation force
-     \li Particle mass available as particle_mass_
-     */
-    if (external_force_ == Gravitation)
-    {
-
-    }
+        /** \todo (Part 1) Implement damping force
+         \li The damping coefficient is given as member damping_
+         */
+         particle->force -= damping_*particle->velocity;
 
 
-    /** \todo (Part 1) Implement force based boundary collisions
-     \li Collision coefficient given as collision_stiffness_
-     */
-    // collision forces
-    if (collisions_ == Force_based)
-    {
-        float planes[4][3] = {
-            {  0.0,  1.0, 1.0 },
-            {  0.0, -1.0, 1.0 },
-            {  1.0,  0.0, 1.0 },
-            { -1.0,  0.0, 1.0 }
-        };
+        /** \todo (Part 1) Implement gravitation force
+         \li Particle mass available as particle_mass_
+         */
+        if (external_force_ == Gravitation)
+        {
+            particle->force -= vec2(0, 9.81 * particle->mass);
+        }
 
 
+        /** \todo (Part 1) Implement force based boundary collisions
+         \li Collision coefficient given as collision_stiffness_
+         */
+        // collision forces
+        if (collisions_ == Force_based)
+        {
+            float planes[4][3] = {
+                {  0.0,  1.0, 1.0 },
+                {  0.0, -1.0, 1.0 },
+                {  1.0,  0.0, 1.0 },
+                { -1.0,  0.0, 1.0 }
+            };
+
+            static const vec2 origin(0,0);
+
+            for (int i = 0; i < 4; ++i) {
+                float A = planes[i][0], B = planes[i][1], C = planes[i][2];
+                vec2 n(A, B);
+                vec2 p;
+                if (A != 0.0) {
+                    p = vec2(C / A, 0.0);
+                } else if (B != 0.0) {
+                    p = vec2(0.0, C / B);
+                }
+
+                float d = fabs(A * particle->position[0] + B * particle->position[1] + C)/sqrtf(A * A + B * B);
+
+                if (dot(p - particle->position, n) <= 0) {
+                    particle->force -= collision_stiffness_ * (d + particle_radius_) * n;
+                    //std::cout << d << std::endl;
+                    //std::cout << fabs(A * particle->position[0] + B * particle->position[1] + C) << std::endl;
+                    std::cout << particle->position[0] << "," << particle->position[1] << " : " << d <<std::endl;
+                } else if (d <= particle_radius_) {
+                    particle->force -= collision_stiffness_ * (d - particle_radius_) * n;
+                }
+
+            }
+
+
+        }
     }
 
 
