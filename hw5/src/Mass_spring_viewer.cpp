@@ -493,6 +493,10 @@ Mass_spring_viewer::compute_forces()
         vec2 pos0 = p0.position;
         vec2 pos1 = mouse_spring_.mouse_position;
 
+        vec2 direction = pos0 - pos1;
+        float stretchLength = norm(direction);
+
+        p0.force -= (spring_stiffness_ * stretchLength  + spring_damping_ * dot(p0.velocity, direction) / stretchLength) * (direction / stretchLength);
     }
 
 
