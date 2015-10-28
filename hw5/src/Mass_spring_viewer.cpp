@@ -367,9 +367,11 @@ void Mass_spring_viewer::time_integration(float dt)
             compute_forces();
             std::vector<Particle>& particles = body_.particles;
             for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
-                particle->acceleration = particle->force / particle->mass;
-                particle->position += dt*particle->velocity;
-                particle->velocity += dt*particle->acceleration;
+                if (!particle->locked) {
+                    particle->acceleration = particle->force / particle->mass;
+                    particle->position += dt*particle->velocity;
+                    particle->velocity += dt*particle->acceleration;
+                }
             }
 
             break;
@@ -422,63 +424,65 @@ Mass_spring_viewer::compute_forces()
 
     std::vector<Particle>& particles = body_.particles;
     for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
+        if (!particle->locked) {
 
-        /** \todo (Part 1) Implement center force
-         */
-        if (external_force_ == Center)
-        {
-            static const float c = 20.0;
-            particle->force -= c * particle->position;
-        }
-
-
-        /** \todo (Part 1) Implement damping force
-         \li The damping coefficient is given as member damping_
-         */
-         particle->force -= damping_*particle->velocity;
-
-
-        /** \todo (Part 1) Implement gravitation force
-         \li Particle mass available as particle_mass_
-         */
-        if (external_force_ == Gravitation)
-        {
-            particle->force -= vec2(0, 9.81 * particle->mass);
-        }
-
-
-        /** \todo (Part 1) Implement force based boundary collisions
-         \li Collision coefficient given as collision_stiffness_
-         */
-        // collision forces
-        if (collisions_ == Force_based)
-        {
-            float planes[4][3] = {
-                {  0.0,  1.0, 1.0 },
-                {  0.0, -1.0, 1.0 },
-                {  1.0,  0.0, 1.0 },
-                { -1.0,  0.0, 1.0 }
-            };
-
-            for (int i = 0; i < 4; ++i) {
-                float A = planes[i][0], B = planes[i][1], C = -planes[i][2];
-                vec2 n(A, B);
-                vec2 p;
-                if (A != 0.0) {
-                    p = vec2(C / A, 0.0);
-                } else if (B != 0.0) {
-                    p = vec2(0.0, C / B);
-                }
-
-                float d = fabs(A * particle->position[0] + B * particle->position[1] - C)/sqrtf(A * A + B * B);
-
-                if (dot(p - particle->position, n) >= 0 || d <= particle_radius_) {
-                    particle->force += collision_stiffness_ * (d + particle_radius_) * n;
-                }
-
+            /** \todo (Part 1) Implement center force
+             */
+            if (external_force_ == Center)
+            {
+                static const float c = 20.0;
+                particle->force -= c * particle->position;
             }
 
 
+            /** \todo (Part 1) Implement damping force
+             \li The damping coefficient is given as member damping_
+             */
+             particle->force -= damping_*particle->velocity;
+
+
+            /** \todo (Part 1) Implement gravitation force
+             \li Particle mass available as particle_mass_
+             */
+            if (external_force_ == Gravitation)
+            {
+                particle->force -= vec2(0, 9.81 * particle->mass);
+            }
+
+
+            /** \todo (Part 1) Implement force based boundary collisions
+             \li Collision coefficient given as collision_stiffness_
+             */
+            // collision forces
+            if (collisions_ == Force_based)
+            {
+                float planes[4][3] = {
+                    {  0.0,  1.0, 1.0 },
+                    {  0.0, -1.0, 1.0 },
+                    {  1.0,  0.0, 1.0 },
+                    { -1.0,  0.0, 1.0 }
+                };
+
+                for (int i = 0; i < 4; ++i) {
+                    float A = planes[i][0], B = planes[i][1], C = -planes[i][2];
+                    vec2 n(A, B);
+                    vec2 p;
+                    if (A != 0.0) {
+                        p = vec2(C / A, 0.0);
+                    } else if (B != 0.0) {
+                        p = vec2(0.0, C / B);
+                    }
+
+                    float d = fabs(A * particle->position[0] + B * particle->position[1] - C)/sqrtf(A * A + B * B);
+
+                    if (dot(p - particle->position, n) >= 0 || d <= particle_radius_) {
+                        particle->force += collision_stiffness_ * (d + particle_radius_) * n;
+                    }
+
+                }
+
+
+            }
         }
     }
 
@@ -490,13 +494,16 @@ Mass_spring_viewer::compute_forces()
     {
         Particle& p0 = body_.particles[ mouse_spring_.particle_index ];
 
-        vec2 pos0 = p0.position;
-        vec2 pos1 = mouse_spring_.mouse_position;
+        if (!p0.locked) {
+            vec2 pos0 = p0.position;
+            vec2 pos1 = mouse_spring_.mouse_position;
 
-        vec2 direction = pos0 - pos1;
-        float stretchLength = norm(direction);
+            vec2 direction = pos0 - pos1;
+            float stretchLength = norm(direction);
+            vec2 norm_direction = direction/stretchLength;
 
-        p0.force -= (spring_stiffness_ * stretchLength  + spring_damping_ * dot(p0.velocity, direction) / stretchLength) * (direction / stretchLength);
+            p0.force -= (spring_stiffness_ * stretchLength  + spring_damping_ * dot(p0.velocity, norm_direction)) * norm_direction;
+        }
     }
 
 
@@ -505,7 +512,27 @@ Mass_spring_viewer::compute_forces()
      \li Required coefficients are given as spring_stiffness_ and spring_damping_
      */
 
+    std::vector<Spring>& springs = body_.springs;
 
+    for (std::vector<Spring>::iterator spring = springs.begin(); spring != springs.end(); ++spring) {
+        Particle* p0 = spring->particle0;
+        Particle* p1 = spring->particle1;
+        if (!p0->locked || !p1->locked) {
+            float ks = spring_stiffness_;
+            float kd = spring_damping_;
+            float L = spring->rest_length;
+            float xx0 = spring->length();
+            vec2 norm_direction = (p0->position - p1->position) / xx0;
+            vec2 v_diff = p0->velocity - p1->velocity;
+            vec2 F0 = -(ks * (xx0 - L) + kd * dot(v_diff, norm_direction)) * norm_direction;
+            if (!p0->locked) {
+                p0->force += F0;
+            }
+            if (!p1->locked) {
+                p1->force -= F0;
+            }
+        }
+    }
 
     /** \todo (Part 2) Compute more forces in part 2 of the exercise: triangle-area forces, binding forces, etc.
      */
