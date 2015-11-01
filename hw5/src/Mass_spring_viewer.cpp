@@ -369,8 +369,8 @@ void Mass_spring_viewer::time_integration(float dt)
             for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
                 if (!particle->locked) {
                     particle->acceleration = particle->force / particle->mass;
-                    particle->position += dt*particle->velocity;
                     particle->velocity += dt*particle->acceleration;
+                    particle->position += dt*particle->velocity;
                 }
             }
 
