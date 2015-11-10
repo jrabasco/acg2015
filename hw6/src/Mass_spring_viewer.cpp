@@ -620,6 +620,19 @@ void Mass_spring_viewer::impulse_based_collisions()
         {  1.0,  0.0, 1.0 },
         { -1.0,  0.0, 1.0 }
     };
+    float epsilon = 0.9;
+    std::vector<Particle>& particles = body_.particles;
+    for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
+        for (int i = 0; i < 4; ++i) {
+            float A = planes[i][0], B = planes[i][1], C = planes[i][2];
+            vec2 n(A, B);
+            float d = A*particle->position[0] + B*particle->position[1] + C;
+            if (d <= particle_radius_) {
+                float vn = dot(n, particle->velocity);
+                particle->velocity -= (1 + epsilon) * n *vn;
+            }
+        }
+    }
 }
 //=============================================================================
 
