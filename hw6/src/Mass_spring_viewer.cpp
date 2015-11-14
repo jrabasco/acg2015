@@ -20,6 +20,12 @@
 
 //== IMPLEMENTATION ==========================================================
 
+float planes[4][3] = {
+    {  0.0,  1.0, 1.0 },
+    {  0.0, -1.0, 1.0 },
+    {  1.0,  0.0, 1.0 },
+    { -1.0,  0.0, 1.0 }
+};
 
 Mass_spring_viewer::
 Mass_spring_viewer(const char* _title, int _width, int _height)
@@ -507,12 +513,6 @@ Mass_spring_viewer::compute_forces()
                 // collision forces
                 if (collisions_ == Force_based)
                 {
-                    float planes[4][3] = {
-                        {  0.0,  1.0, 1.0 },
-                        {  0.0, -1.0, 1.0 },
-                        {  1.0,  0.0, 1.0 },
-                        { -1.0,  0.0, 1.0 }
-                    };
 
                     for (int i = 0; i < 4; ++i) {
                         float A = planes[i][0], B = planes[i][1], C = -planes[i][2];
@@ -575,7 +575,7 @@ Mass_spring_viewer::compute_forces()
                 float xx0 = spring->length();
                 vec2 norm_direction = (p0->position - p1->position) / xx0;
                 vec2 v_diff = p0->velocity - p1->velocity;
-                vec2 F0 = -(ks * (xx0 - L) + kd * dot(v_diff, norm_direction)) * norm_direction;
+                vec2 F0 = -(ks * (xx0 - L)) * norm_direction;// + kd * dot(v_diff, norm_direction)) * norm_direction;
                 if (!p0->locked) {
                     p0->force += F0;
                 }
@@ -614,12 +614,7 @@ void Mass_spring_viewer::impulse_based_collisions()
 {
     /** \todo (Part 2) Handle collisions based on impulses
      */
-    float planes[4][3] = {
-        {  0.0,  1.0, 1.0 },
-        {  0.0, -1.0, 1.0 },
-        {  1.0,  0.0, 1.0 },
-        { -1.0,  0.0, 1.0 }
-    };
+
     float epsilon = 0.9;
     std::vector<Particle>& particles = body_.particles;
     for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
@@ -641,9 +636,109 @@ void Mass_spring_viewer::compute_jacobians ()
   /// Clear the solver matrices
   solver_.clear ();
 
-  /** \todo (Part 2) Implement the corresponding jacobians for each of the force types.
-   * Use the code from compute_forces() as the starting ground.
-   */
+  std::vector<Particle>& particles = body_.particles;
+
+  // Center forces
+  if (external_force_ == Center) {
+    static const float c = 20.0;
+    for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
+        if (!particle->locked) {
+            int i = particle->id;
+            solver_.addElementToJacobian(2 * i, 2 * i, -c);
+            solver_.addElementToJacobian(2 * i + 1, 2 * i + 1, -c);
+        }
+    }
+  }
+
+  // Collisions
+  if (collisions_ == Force_based) {
+    for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
+        if (particle->locked)
+            continue;
+
+        for (int i = 0; i < 4; ++i) {
+            float A = planes[i][0], B = planes[i][1], C = planes[i][2];
+            vec2 n(A, B);
+            float d = A*particle->position[0] + B*particle->position[1] + C;
+            if (d <= particle_radius_) {
+                float sgn = (d < 0) ? -1.0f : 1.0f;
+                float coeff = sgn * collision_stiffness_;
+                float jacob_idx = 2 * particle->id;
+                solver_.addElementToJacobian(jacob_idx,     jacob_idx,     coeff * A * n[0]);
+                solver_.addElementToJacobian(jacob_idx + 1, jacob_idx,     coeff * A * n[1]);
+                solver_.addElementToJacobian(jacob_idx,     jacob_idx + 1, coeff * B * n[0]);
+                solver_.addElementToJacobian(jacob_idx + 1, jacob_idx + 1, coeff * B * n[1]);
+            }
+        }
+
+    }
+  }
+
+  // Springs
+  std::vector<Spring>& springs = body_.springs;
+
+  for (std::vector<Spring>::iterator spring = springs.begin(); spring != springs.end(); ++spring) {
+    Particle * const pi = spring->particle0;
+    Particle * const pj = spring->particle1;
+
+    const int i = pi->id;
+    const int j = pj->id;
+    assert(i < particles.size());
+    assert(j < particles.size());
+
+    const vec2 xi = pi->position;
+    const vec2 xj = pj->position;
+    const vec2 diff = xi - xj;
+    const float dist = spring->length();
+    const float distSq = dist * dist;
+
+    const vec2 I2[2] = {
+        vec2(1.0f, 0.0f),
+        vec2(0.0f, 1.0f)
+    };
+
+    // Non-damped terms
+    const vec2 diffDiffT[2] = {
+        vec2(diff[0] * diff[0], diff[0] * diff[1]),
+        vec2(diff[0] * diff[1], diff[1] * diff[1])
+    };
+
+    const vec2 dFi_dxi[2] = {
+        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] + diffDiffT[0] / distSq) / dist),
+        -spring_stiffness_ * (I2[1] - spring->rest_length * (I2[1] + diffDiffT[1] / distSq) / dist)
+    };
+
+    const vec2 dFi_dxj[2] = {
+        -dFi_dxi[0],
+        -dFi_dxi[1]
+    };
+
+    if (!pi->locked) {
+      solver_.addElementToJacobian(2 * i,     2 * i,      dFi_dxi[0][0]);
+      solver_.addElementToJacobian(2 * i,     2 * i + 1,  dFi_dxi[0][1]);
+      solver_.addElementToJacobian(2 * i + 1, 2 * i,      dFi_dxi[1][0]);
+      solver_.addElementToJacobian(2 * i + 1, 2 * i + 1,  dFi_dxi[1][1]);
+
+      solver_.addElementToJacobian(2 * i,     2 * j,      dFi_dxj[0][0]);
+      solver_.addElementToJacobian(2 * i,     2 * j + 1,  dFi_dxj[0][1]);
+      solver_.addElementToJacobian(2 * i + 1, 2 * j,      dFi_dxj[1][0]);
+      solver_.addElementToJacobian(2 * i + 1, 2 * j + 1,  dFi_dxj[1][1]);
+    }
+
+    if (!pj->locked) {
+      solver_.addElementToJacobian(2 * j,     2 * i,     -dFi_dxi[0][0]);
+      solver_.addElementToJacobian(2 * j,     2 * i + 1, -dFi_dxi[0][1]);
+      solver_.addElementToJacobian(2 * j + 1, 2 * i,     -dFi_dxi[1][0]);
+      solver_.addElementToJacobian(2 * j + 1, 2 * i + 1, -dFi_dxi[1][1]);
+
+      solver_.addElementToJacobian(2 * j,     2 * j,     -dFi_dxj[0][0]);
+      solver_.addElementToJacobian(2 * j,     2 * j + 1, -dFi_dxj[0][1]);
+      solver_.addElementToJacobian(2 * j + 1, 2 * j,     -dFi_dxj[1][0]);
+      solver_.addElementToJacobian(2 * j + 1, 2 * j + 1, -dFi_dxj[1][1]);
+    }
+ }
+
+
 }
 
 //=============================================================================
