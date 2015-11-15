@@ -596,14 +596,13 @@ Mass_spring_viewer::compute_forces()
             const vec2& p1 = triangle->particle1->position;
             const vec2& p2 = triangle->particle2->position;
             const float coeff = area_stiffness_ * (triangle->area() - triangle->rest_area) / 2.0;
-            vec2 dArea0(p0[1] - p2[1] + p1[1] - p0[1], p0[0] - p1[0] + p2[0] - p0[0]);
+            vec2 dArea0(p1[1] - p2[1], p2[0] - p1[0]);
             vec2 dArea1(p2[1] - p0[1], p0[0] - p2[0]);
             vec2 dArea2(p0[1] - p1[1], p1[0] - p0[0]);
             triangle->particle0->force -= coeff * dArea0;
             triangle->particle1->force -= coeff * dArea1;
             triangle->particle2->force -= coeff * dArea2;
         }
-
     }
 }
 
@@ -736,8 +735,6 @@ void Mass_spring_viewer::compute_jacobians ()
       solver_.addElementToJacobian(2 * j + 1, 2 * j,     -dFi_dxj[1][0]);
       solver_.addElementToJacobian(2 * j + 1, 2 * j + 1, -dFi_dxj[1][1]);
     }
-
-    // Damped terms
 
  }
 
