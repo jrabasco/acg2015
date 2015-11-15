@@ -17,6 +17,8 @@
 #include "utils/gl_text.h"
 #include <sstream>
 
+bool equilibrium = false;
+
 
 //== IMPLEMENTATION ==========================================================
 
@@ -199,6 +201,11 @@ void Mass_spring_viewer::keyboard(int key, int x, int y)
             break;
         }
 
+        case 'e':
+        {
+            equilibrium = !equilibrium;
+            break;
+        }
 
         // let parent class do the work
         default:
@@ -604,6 +611,28 @@ Mass_spring_viewer::compute_forces()
             triangle->particle2->force -= coeff * dArea2;
         }
     }
+
+    if (equilibrium)
+    {
+        for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
+            if (!particle->locked) {
+                for (std::vector<Particle>::iterator p2 = particles.begin(); p2 != particles.end(); ++p2) {
+                    if (p2 != particle) {
+                        vec2 dir = particle->position - p2->position;
+                        float dist = norm(dir);
+                        particle->force += 0.01 * (dir/(dist * dist));
+
+                    }
+                }
+                for (int i = 0; i < 4; ++i) {
+                    float A = planes[i][0], B = planes[i][1], C = planes[i][2];
+                    vec2 n(A, B);
+                    float d = A*particle->position[0] + B*particle->position[1] + C;
+                    particle->force += 0.2 * n / d;
+                }
+            }
+        }
+    }
 }
 
 
@@ -622,9 +651,9 @@ void Mass_spring_viewer::impulse_based_collisions()
             float A = planes[i][0], B = planes[i][1], C = planes[i][2];
             vec2 n(A, B);
             float d = A*particle->position[0] + B*particle->position[1] + C;
-            if (d <= particle_radius_) {
-                float vn = dot(n, particle->velocity);
-                particle->velocity -= (1 + epsilon) * n *vn;
+            float vn = dot(n, particle->velocity);
+            if (d <= particle_radius_ && vn < 0.0) {
+                particle->velocity -= (1 + epsilon) * n * vn;
             }
         }
     }
@@ -833,7 +862,7 @@ void ImplicitSolver::solve (float dt, float mass,
 {
   int num_particles = particles.size ();
 
-  /// Build the Jacobian matrix from the sparse set of elements
+  /// Build the Jacobian matrix from the kesparse set of elements
   Eigen::SparseMatrix<float> J (2 * num_particles, 2 * num_particles);
   J.setFromTriplets (triplets_.begin (), triplets_.end ());
 
