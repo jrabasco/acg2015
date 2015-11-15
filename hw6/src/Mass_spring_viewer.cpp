@@ -495,7 +495,8 @@ Mass_spring_viewer::compute_forces()
                 /** \todo (Part 1) Implement damping force
                  \li The damping coefficient is given as member damping_
                  */
-                 particle->force -= damping_*particle->velocity;
+                 if (integration_ != Implicit)
+                    particle->force -= damping_*particle->velocity;
 
 
                 /** \todo (Part 1) Implement gravitation force
