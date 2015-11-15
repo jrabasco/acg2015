@@ -736,8 +736,8 @@ void Mass_spring_viewer::compute_jacobians ()
     };
 
     vec2 dFi_dxi[2] = {
-        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] - diffDiffT[0] / distSq) / dist) - diffDiffT[0] / (distSq * g_dt),
-        -spring_stiffness_ * (I2[1] - spring->rest_length * (I2[1] - diffDiffT[1] / distSq) / dist) - diffDiffT[1] / (distSq * g_dt)
+        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] - diffDiffT[0] / distSq) / dist) - spring_damping_ * diffDiffT[0] / (distSq * g_dt),
+        -spring_stiffness_ * (I2[1] - spring->rest_length * (I2[1] - diffDiffT[1] / distSq) / dist) - spring_damping_ * diffDiffT[1] / (distSq * g_dt)
     };
 
     vec2 dFi_dxj[2] = {
@@ -770,6 +770,28 @@ void Mass_spring_viewer::compute_jacobians ()
     }
 
  }
+
+ if (mouse_spring_.active) {
+    Particle& p0 = body_.particles[ mouse_spring_.particle_index ];
+
+    if (!p0.locked) {
+        vec2 pos0 = p0.position;
+        vec2 pos1 = mouse_spring_.mouse_position;
+
+        vec2 deltaX = pos0 - pos1;
+        float normDX = norm(deltaX);
+
+        float topLeft     = -spring_stiffness_ - spring_damping_ * deltaX[0] * deltaX[0] / (g_dt * normDX * normDX);
+        float bottomRight = -spring_stiffness_ - spring_damping_ * deltaX[1] * deltaX[1] / (g_dt * normDX * normDX);
+        float other = -spring_stiffness_ - spring_damping_ * deltaX[0] * deltaX[1] / (g_dt * normDX * normDX);
+
+        int i = p0.id;
+        solver_.addElementToJacobian(2 * i,     2 * i,      topLeft);
+        solver_.addElementToJacobian(2 * i + 1, 2 * i,      other);
+        solver_.addElementToJacobian(2 * i,     2 * i + 1,  other);
+        solver_.addElementToJacobian(2 * i + 1, 2 * i + 1,  bottomRight);
+    }
+}
 
  if (area_forces_) {
     std::vector<Triangle>& triangles = body_.triangles;
