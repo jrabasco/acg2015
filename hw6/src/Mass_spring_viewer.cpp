@@ -447,7 +447,7 @@ void Mass_spring_viewer::time_integration(float dt)
         {
             /// The usual force computation method is called, and then the jacobian matrix dF/dx is calculated
             compute_forces ();
-            compute_jacobians ();
+            compute_jacobians (dt);
 
             /// Finally the linear system is composed and solved
             solver_.solve (dt, particle_mass_, body_.particles);
@@ -576,7 +576,7 @@ Mass_spring_viewer::compute_forces()
                 float xx0 = spring->length();
                 vec2 norm_direction = (p0->position - p1->position) / xx0;
                 vec2 v_diff = p0->velocity - p1->velocity;
-                vec2 F0 = -(ks * (xx0 - L)) * norm_direction;// + kd * dot(v_diff, norm_direction)) * norm_direction;
+                vec2 F0 = -(ks * (xx0 - L) + kd * dot(v_diff, norm_direction)) * norm_direction;
                 if (!p0->locked) {
                     p0->force += F0;
                 }
@@ -698,18 +698,17 @@ void Mass_spring_viewer::compute_jacobians ()
         vec2(0.0f, 1.0f)
     };
 
-    // Non-damped terms
     const vec2 diffDiffT[2] = {
         vec2(diff[0] * diff[0], diff[0] * diff[1]),
         vec2(diff[0] * diff[1], diff[1] * diff[1])
     };
 
-    const vec2 dFi_dxi[2] = {
-        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] - diffDiffT[0] / distSq) / dist),
-        -spring_stiffness_ * (I2[1] - spring->rest_length * (I2[1] - diffDiffT[1] / distSq) / dist)
+    vec2 dFi_dxi[2] = {
+        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] - diffDiffT[0] / distSq) / dist) - diffDiffT[0] / (distSq * dt),
+        -spring_stiffness_ * (I2[1] - spring->rest_length * (I2[1] - diffDiffT[1] / distSq) / dist) - diffDiffT[1] / (distSq * dt)
     };
 
-    const vec2 dFi_dxj[2] = {
+    vec2 dFi_dxj[2] = {
         -dFi_dxi[0],
         -dFi_dxi[1]
     };
@@ -737,6 +736,9 @@ void Mass_spring_viewer::compute_jacobians ()
       solver_.addElementToJacobian(2 * j + 1, 2 * j,     -dFi_dxj[1][0]);
       solver_.addElementToJacobian(2 * j + 1, 2 * j + 1, -dFi_dxj[1][1]);
     }
+
+    // Damped terms
+
  }
 
 
