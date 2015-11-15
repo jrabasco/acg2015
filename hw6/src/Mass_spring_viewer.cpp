@@ -29,6 +29,8 @@ float planes[4][3] = {
     { -1.0,  0.0, 1.0 }
 };
 
+float g_dt = 0.0f;
+
 Mass_spring_viewer::
 Mass_spring_viewer(const char* _title, int _width, int _height)
 : Viewer_2D(_title, _width, _height)
@@ -454,6 +456,8 @@ void Mass_spring_viewer::time_integration(float dt)
         {
             /// The usual force computation method is called, and then the jacobian matrix dF/dx is calculated
             compute_forces ();
+
+            g_dt = dt;
             compute_jacobians ();
 
             /// Finally the linear system is composed and solved
@@ -694,8 +698,8 @@ void Mass_spring_viewer::compute_jacobians ()
                 float coeff = sgn * collision_stiffness_;
                 float jacob_idx = 2 * particle->id;
                 solver_.addElementToJacobian(jacob_idx,     jacob_idx,     coeff * A * n[0]);
-                solver_.addElementToJacobian(jacob_idx + 1, jacob_idx,     coeff * A * n[1]);
-                solver_.addElementToJacobian(jacob_idx,     jacob_idx + 1, coeff * B * n[0]);
+                solver_.addElementToJacobian(jacob_idx,     jacob_idx + 1,     coeff * A * n[1]);
+                solver_.addElementToJacobian(jacob_idx + 1,     jacob_idx, coeff * B * n[0]);
                 solver_.addElementToJacobian(jacob_idx + 1, jacob_idx + 1, coeff * B * n[1]);
             }
         }
@@ -732,8 +736,8 @@ void Mass_spring_viewer::compute_jacobians ()
     };
 
     vec2 dFi_dxi[2] = {
-        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] - diffDiffT[0] / distSq) / dist) - diffDiffT[0] / (distSq), //TODO : divide the last term by h
-        -spring_stiffness_ * (I2[1] - spring->rest_length * (I2[1] - diffDiffT[1] / distSq) / dist) - diffDiffT[1] / (distSq)
+        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] - diffDiffT[0] / distSq) / dist) - diffDiffT[0] / (distSq * g_dt),
+        -spring_stiffness_ * (I2[1] - spring->rest_length * (I2[1] - diffDiffT[1] / distSq) / dist) - diffDiffT[1] / (distSq * g_dt)
     };
 
     vec2 dFi_dxj[2] = {
