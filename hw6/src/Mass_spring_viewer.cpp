@@ -704,8 +704,8 @@ void Mass_spring_viewer::compute_jacobians ()
     };
 
     const vec2 dFi_dxi[2] = {
-        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] + diffDiffT[0] / distSq) / dist),
-        -spring_stiffness_ * (I2[1] - spring->rest_length * (I2[1] + diffDiffT[1] / distSq) / dist)
+        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] - diffDiffT[0] / distSq) / dist),
+        -spring_stiffness_ * (I2[1] - spring->rest_length * (I2[1] - diffDiffT[1] / distSq) / dist)
     };
 
     const vec2 dFi_dxj[2] = {
