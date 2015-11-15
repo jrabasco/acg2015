@@ -447,7 +447,7 @@ void Mass_spring_viewer::time_integration(float dt)
         {
             /// The usual force computation method is called, and then the jacobian matrix dF/dx is calculated
             compute_forces ();
-            compute_jacobians (dt);
+            compute_jacobians ();
 
             /// Finally the linear system is composed and solved
             solver_.solve (dt, particle_mass_, body_.particles);
