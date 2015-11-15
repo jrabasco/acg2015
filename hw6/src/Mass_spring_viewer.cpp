@@ -743,25 +743,25 @@ void Mass_spring_viewer::compute_jacobians ()
 
     if (!pi->locked) {
       solver_.addElementToJacobian(2 * i,     2 * i,      dFi_dxi[0][0]);
-      solver_.addElementToJacobian(2 * i,     2 * i + 1,  dFi_dxi[0][1]);
-      solver_.addElementToJacobian(2 * i + 1, 2 * i,      dFi_dxi[1][0]);
+      solver_.addElementToJacobian(2 * i + 1, 2 * i,      dFi_dxi[0][1]);
+      solver_.addElementToJacobian(2 * i,     2 * i + 1,  dFi_dxi[1][0]);
       solver_.addElementToJacobian(2 * i + 1, 2 * i + 1,  dFi_dxi[1][1]);
 
       solver_.addElementToJacobian(2 * i,     2 * j,      dFi_dxj[0][0]);
-      solver_.addElementToJacobian(2 * i,     2 * j + 1,  dFi_dxj[0][1]);
-      solver_.addElementToJacobian(2 * i + 1, 2 * j,      dFi_dxj[1][0]);
+      solver_.addElementToJacobian(2 * i + 1, 2 * j,      dFi_dxj[0][1]);
+      solver_.addElementToJacobian(2 * i,     2 * j + 1,  dFi_dxj[1][0]);
       solver_.addElementToJacobian(2 * i + 1, 2 * j + 1,  dFi_dxj[1][1]);
     }
 
     if (!pj->locked) {
       solver_.addElementToJacobian(2 * j,     2 * i,     -dFi_dxi[0][0]);
-      solver_.addElementToJacobian(2 * j,     2 * i + 1, -dFi_dxi[0][1]);
-      solver_.addElementToJacobian(2 * j + 1, 2 * i,     -dFi_dxi[1][0]);
+      solver_.addElementToJacobian(2 * j + 1, 2 * i,     -dFi_dxi[0][1]);
+      solver_.addElementToJacobian(2 * j,     2 * i + 1, -dFi_dxi[1][0]);
       solver_.addElementToJacobian(2 * j + 1, 2 * i + 1, -dFi_dxi[1][1]);
 
       solver_.addElementToJacobian(2 * j,     2 * j,     -dFi_dxj[0][0]);
-      solver_.addElementToJacobian(2 * j,     2 * j + 1, -dFi_dxj[0][1]);
-      solver_.addElementToJacobian(2 * j + 1, 2 * j,     -dFi_dxj[1][0]);
+      solver_.addElementToJacobian(2 * j + 1, 2 * j,     -dFi_dxj[0][1]);
+      solver_.addElementToJacobian(2 * j,     2 * j + 1, -dFi_dxj[1][0]);
       solver_.addElementToJacobian(2 * j + 1, 2 * j + 1, -dFi_dxj[1][1]);
     }
 
@@ -793,60 +793,60 @@ void Mass_spring_viewer::compute_jacobians ()
         if (!(triangle->particle0->locked)) {
           // dFi/dxi
           solver_.addElementToJacobian(2 * i,     2 * i,      -dC_dxi[0] * dArea_dxi[0]);
-          solver_.addElementToJacobian(2 * i,     2 * i + 1,  -dC_dxi[0] * dArea_dxi[1]);
-          solver_.addElementToJacobian(2 * i + 1, 2 * i,      -dC_dxi[1] * dArea_dxi[0]);
+          solver_.addElementToJacobian(2 * i + 1, 2 * i,      -dC_dxi[0] * dArea_dxi[1]);
+          solver_.addElementToJacobian(2 * i,     2 * i + 1,  -dC_dxi[1] * dArea_dxi[0]);
           solver_.addElementToJacobian(2 * i + 1, 2 * i + 1,  -dC_dxi[1] * dArea_dxi[1]);
 
           // dFi/dxj
           solver_.addElementToJacobian(2 * i,     2 * j,      -dC_dxj[0] * dArea_dxi[0]);
-          solver_.addElementToJacobian(2 * i,     2 * j + 1,  -dC_dxj[0] * dArea_dxi[1] - C / 2.0f);
-          solver_.addElementToJacobian(2 * i + 1, 2 * j,      -dC_dxj[1] * dArea_dxi[0] + C / 2.0f);
+          solver_.addElementToJacobian(2 * i + 1, 2 * j,      -dC_dxj[0] * dArea_dxi[1] - C / 2.0f);
+          solver_.addElementToJacobian(2 * i,     2 * j + 1,  -dC_dxj[1] * dArea_dxi[0] + C / 2.0f);
           solver_.addElementToJacobian(2 * i + 1, 2 * j + 1,  -dC_dxj[1] * dArea_dxi[1]);
 
           // dFi/dxk
           solver_.addElementToJacobian(2 * i,     2 * k,      -dC_dxk[0] * dArea_dxi[0]);
-          solver_.addElementToJacobian(2 * i,     2 * k + 1,  -dC_dxk[0] * dArea_dxi[1] + C / 2.0f);
-          solver_.addElementToJacobian(2 * i + 1, 2 * k,      -dC_dxk[1] * dArea_dxi[0] - C / 2.0f);
+          solver_.addElementToJacobian(2 * i + 1, 2 * k,      -dC_dxk[0] * dArea_dxi[1] + C / 2.0f);
+          solver_.addElementToJacobian(2 * i,     2 * k + 1,  -dC_dxk[1] * dArea_dxi[0] - C / 2.0f);
           solver_.addElementToJacobian(2 * i + 1, 2 * k + 1,  -dC_dxk[1] * dArea_dxi[1]);
         }
 
         if (!(triangle->particle1->locked)) {
           // dFj/dxi
           solver_.addElementToJacobian(2 * j,     2 * i,      -dC_dxi[0] * dArea_dxj[0]);
-          solver_.addElementToJacobian(2 * j,     2 * i + 1,  -dC_dxi[0] * dArea_dxj[1] + C / 2.0f);
-          solver_.addElementToJacobian(2 * j + 1, 2 * i,      -dC_dxi[1] * dArea_dxj[0] - C / 2.0f);
+          solver_.addElementToJacobian(2 * j + 1, 2 * i,      -dC_dxi[0] * dArea_dxj[1] + C / 2.0f);
+          solver_.addElementToJacobian(2 * j,     2 * i + 1,  -dC_dxi[1] * dArea_dxj[0] - C / 2.0f);
           solver_.addElementToJacobian(2 * j + 1, 2 * i + 1,  -dC_dxi[1] * dArea_dxj[1]);
 
           // dFj/dxj
           solver_.addElementToJacobian(2 * j,     2 * j,      -dC_dxj[0] * dArea_dxj[0]);
-          solver_.addElementToJacobian(2 * j,     2 * j + 1,  -dC_dxj[0] * dArea_dxj[1]);
-          solver_.addElementToJacobian(2 * j + 1, 2 * j,      -dC_dxj[1] * dArea_dxj[0]);
+          solver_.addElementToJacobian(2 * j + 1, 2 * j,      -dC_dxj[0] * dArea_dxj[1]);
+          solver_.addElementToJacobian(2 * j,     2 * j + 1,  -dC_dxj[1] * dArea_dxj[0]);
           solver_.addElementToJacobian(2 * j + 1, 2 * j + 1,  -dC_dxj[1] * dArea_dxj[1]);
 
           // dFj/dxk
           solver_.addElementToJacobian(2 * j,     2 * k,      -dC_dxk[0] * dArea_dxj[0]);
-          solver_.addElementToJacobian(2 * j,     2 * k + 1,  -dC_dxk[0] * dArea_dxj[1] - C / 2.0f);
-          solver_.addElementToJacobian(2 * j + 1, 2 * k,      -dC_dxk[1] * dArea_dxj[0] + C / 2.0f);
+          solver_.addElementToJacobian(2 * j + 1, 2 * k,      -dC_dxk[0] * dArea_dxj[1] - C / 2.0f);
+          solver_.addElementToJacobian(2 * j,     2 * k + 1,  -dC_dxk[1] * dArea_dxj[0] + C / 2.0f);
           solver_.addElementToJacobian(2 * j + 1, 2 * k + 1,  -dC_dxk[1] * dArea_dxj[1]);
         }
 
         if (!(triangle->particle2->locked)) {
           // dFk/dxi
           solver_.addElementToJacobian(2 * k,     2 * i,      -dC_dxi[0] * dArea_dxk[0]);
-          solver_.addElementToJacobian(2 * k,     2 * i + 1,  -dC_dxi[0] * dArea_dxk[1] - C / 2.0f);
-          solver_.addElementToJacobian(2 * k + 1, 2 * i,      -dC_dxi[1] * dArea_dxk[0] + C / 2.0f);
+          solver_.addElementToJacobian(2 * k + 1, 2 * i,      -dC_dxi[0] * dArea_dxk[1] - C / 2.0f);
+          solver_.addElementToJacobian(2 * k,     2 * i + 1,  -dC_dxi[1] * dArea_dxk[0] + C / 2.0f);
           solver_.addElementToJacobian(2 * k + 1, 2 * i + 1,  -dC_dxi[1] * dArea_dxk[1]);
 
           // dFk/dxj
           solver_.addElementToJacobian(2 * k,     2 * j,      -dC_dxj[0] * dArea_dxk[0]);
-          solver_.addElementToJacobian(2 * k,     2 * j + 1,  -dC_dxj[0] * dArea_dxk[1] + C / 2.0f);
-          solver_.addElementToJacobian(2 * k + 1, 2 * j,      -dC_dxj[1] * dArea_dxk[0] - C / 2.0f);
+          solver_.addElementToJacobian(2 * k + 1, 2 * j,      -dC_dxj[0] * dArea_dxk[1] + C / 2.0f);
+          solver_.addElementToJacobian(2 * k,     2 * j + 1,  -dC_dxj[1] * dArea_dxk[0] - C / 2.0f);
           solver_.addElementToJacobian(2 * k + 1, 2 * j + 1,  -dC_dxj[1] * dArea_dxk[1]);
 
           // dFk/dxk
           solver_.addElementToJacobian(2 * k,     2 * k,      -dC_dxk[0] * dArea_dxk[0]);
-          solver_.addElementToJacobian(2 * k,     2 * k + 1,  -dC_dxk[0] * dArea_dxk[1]);
-          solver_.addElementToJacobian(2 * k + 1, 2 * k,      -dC_dxk[1] * dArea_dxk[0]);
+          solver_.addElementToJacobian(2 * k + 1, 2 * k,      -dC_dxk[0] * dArea_dxk[1]);
+          solver_.addElementToJacobian(2 * k,     2 * k + 1,  -dC_dxk[1] * dArea_dxk[0]);
           solver_.addElementToJacobian(2 * k + 1, 2 * k + 1,  -dC_dxk[1] * dArea_dxk[1]);
         }
 
