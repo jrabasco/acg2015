@@ -732,7 +732,7 @@ void Mass_spring_viewer::compute_jacobians ()
     };
 
     vec2 dFi_dxi[2] = {
-        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] - diffDiffT[0] / distSq) / dist) - diffDiffT[0] / (distSq),
+        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] - diffDiffT[0] / distSq) / dist) - diffDiffT[0] / (distSq), //TODO : divide the last term by h
         -spring_stiffness_ * (I2[1] - spring->rest_length * (I2[1] - diffDiffT[1] / distSq) / dist) - diffDiffT[1] / (distSq)
     };
 
