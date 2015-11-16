@@ -645,41 +645,39 @@ Mass_spring_viewer::compute_forces()
     }
 
     if (output) {
-    float kinetic_energy = 0.0f;
-    float potential_energy = 0.0f;
-    std::ofstream out;
-    switch (integration_)
-    {
-        case Euler:
+        float kinetic_energy = 0.0f;
+        std::ofstream out;
+        switch (integration_)
         {
-            out.open("euler.csv", std::ios::app);
-            break;
+            case Euler:
+            {
+                out.open("euler.csv", std::ios::app);
+                break;
+            }
+            case Midpoint:
+            {
+                out.open("midpoint.csv", std::ios::app);
+                break;
+            }
+            case Verlet:
+            {
+                out.open("verlet.csv", std::ios::app);
+                break;
+            }
+            case Implicit:
+            {
+                out.open("implicit.csv", std::ios::app);
+                break;
+            }
         }
-        case Midpoint:
-        {
-            out.open("midpoint.csv", std::ios::app);
-            break;
-        }
-        case Verlet:
-        {
-            out.open("verlet.csv", std::ios::app);
-            break;
-        }
-        case Implicit:
-        {
-            out.open("implicit.csv", std::ios::app);
-            break;
-        }
-    }
 
-    for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
-        float speed = norm(particle->velocity);
-        kinetic_energy += particle->mass * speed * speed / 2.0f;
-        potential_energy += particle->mass * (particle->position[1] + 1.0f) * 9.81;
-    }
+        for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
+            float speed = norm(particle->velocity);
+            kinetic_energy += particle->mass * speed * speed / 2.0f;
+        }
 
-    out << kinetic_energy << "\n";
-    out.close();
+        out << kinetic_energy << "\n";
+        out.close();
     }
 }
 
@@ -849,7 +847,6 @@ void Mass_spring_viewer::compute_jacobians ()
         const vec2& pj = triangle->particle1->position;
         const vec2& pk = triangle->particle2->position;
 
-        const float Area = triangle->area();
         const vec2 dArea_dxi( (pj[1] - pk[1]) / 2.0f, (pk[0] - pj[0]) / 2.0f);
         const vec2 dArea_dxj( (pk[1] - pi[1]) / 2.0f, (pi[0] - pk[0]) / 2.0f);
         const vec2 dArea_dxk( (pi[1] - pj[1]) / 2.0f, (pj[0] - pi[0]) / 2.0f);
