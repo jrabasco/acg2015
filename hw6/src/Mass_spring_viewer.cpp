@@ -29,7 +29,6 @@ float planes[4][3] = {
     { -1.0,  0.0, 1.0 }
 };
 
-float g_dt = 0.0f;
 
 Mass_spring_viewer::
 Mass_spring_viewer(const char* _title, int _width, int _height)
@@ -456,8 +455,6 @@ void Mass_spring_viewer::time_integration(float dt)
         {
             /// The usual force computation method is called, and then the jacobian matrix dF/dx is calculated
             compute_forces ();
-
-            g_dt = dt;
             compute_jacobians ();
 
             /// Finally the linear system is composed and solved
@@ -698,8 +695,8 @@ void Mass_spring_viewer::compute_jacobians ()
                 float coeff = sgn * collision_stiffness_;
                 float jacob_idx = 2 * particle->id;
                 solver_.addElementToJacobian(jacob_idx,     jacob_idx,     coeff * A * n[0]);
-                solver_.addElementToJacobian(jacob_idx,     jacob_idx + 1,     coeff * A * n[1]);
-                solver_.addElementToJacobian(jacob_idx + 1,     jacob_idx, coeff * B * n[0]);
+                solver_.addElementToJacobian(jacob_idx,     jacob_idx + 1, coeff * B * n[0]);
+                solver_.addElementToJacobian(jacob_idx + 1, jacob_idx,     coeff * A * n[1]);
                 solver_.addElementToJacobian(jacob_idx + 1, jacob_idx + 1, coeff * B * n[1]);
             }
         }
@@ -736,8 +733,8 @@ void Mass_spring_viewer::compute_jacobians ()
     };
 
     vec2 dFi_dxi[2] = {
-        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] - diffDiffT[0] / distSq) / dist) - spring_damping_ * diffDiffT[0] / (distSq * g_dt),
-        -spring_stiffness_ * (I2[1] - spring->rest_length * (I2[1] - diffDiffT[1] / distSq) / dist) - spring_damping_ * diffDiffT[1] / (distSq * g_dt)
+        -spring_stiffness_ * (I2[0] - spring->rest_length * (I2[0] - diffDiffT[0] / distSq) / dist) - spring_damping_ * diffDiffT[0] / (distSq * time_step_),
+        -spring_stiffness_ * (I2[1] - spring->rest_length * (I2[1] - diffDiffT[1] / distSq) / dist) - spring_damping_ * diffDiffT[1] / (distSq * time_step_)
     };
 
     vec2 dFi_dxj[2] = {
@@ -747,25 +744,25 @@ void Mass_spring_viewer::compute_jacobians ()
 
     if (!pi->locked) {
       solver_.addElementToJacobian(2 * i,     2 * i,      dFi_dxi[0][0]);
-      solver_.addElementToJacobian(2 * i + 1, 2 * i,      dFi_dxi[0][1]);
-      solver_.addElementToJacobian(2 * i,     2 * i + 1,  dFi_dxi[1][0]);
+      solver_.addElementToJacobian(2 * i,     2 * i + 1,  dFi_dxi[0][1]);
+      solver_.addElementToJacobian(2 * i + 1, 2 * i,      dFi_dxi[1][0]);
       solver_.addElementToJacobian(2 * i + 1, 2 * i + 1,  dFi_dxi[1][1]);
 
       solver_.addElementToJacobian(2 * i,     2 * j,      dFi_dxj[0][0]);
-      solver_.addElementToJacobian(2 * i + 1, 2 * j,      dFi_dxj[0][1]);
-      solver_.addElementToJacobian(2 * i,     2 * j + 1,  dFi_dxj[1][0]);
+      solver_.addElementToJacobian(2 * i,     2 * j + 1,  dFi_dxj[0][1]);
+      solver_.addElementToJacobian(2 * i + 1, 2 * j,      dFi_dxj[1][0]);
       solver_.addElementToJacobian(2 * i + 1, 2 * j + 1,  dFi_dxj[1][1]);
     }
 
     if (!pj->locked) {
       solver_.addElementToJacobian(2 * j,     2 * i,     -dFi_dxi[0][0]);
-      solver_.addElementToJacobian(2 * j + 1, 2 * i,     -dFi_dxi[0][1]);
-      solver_.addElementToJacobian(2 * j,     2 * i + 1, -dFi_dxi[1][0]);
+      solver_.addElementToJacobian(2 * j,     2 * i + 1, -dFi_dxi[0][1]);
+      solver_.addElementToJacobian(2 * j + 1, 2 * i,     -dFi_dxi[1][0]);
       solver_.addElementToJacobian(2 * j + 1, 2 * i + 1, -dFi_dxi[1][1]);
 
       solver_.addElementToJacobian(2 * j,     2 * j,     -dFi_dxj[0][0]);
-      solver_.addElementToJacobian(2 * j + 1, 2 * j,     -dFi_dxj[0][1]);
-      solver_.addElementToJacobian(2 * j,     2 * j + 1, -dFi_dxj[1][0]);
+      solver_.addElementToJacobian(2 * j,     2 * j + 1, -dFi_dxj[0][1]);
+      solver_.addElementToJacobian(2 * j + 1, 2 * j,     -dFi_dxj[1][0]);
       solver_.addElementToJacobian(2 * j + 1, 2 * j + 1, -dFi_dxj[1][1]);
     }
 
@@ -781,14 +778,14 @@ void Mass_spring_viewer::compute_jacobians ()
         vec2 deltaX = pos0 - pos1;
         float normDX = norm(deltaX);
 
-        float topLeft     = -spring_stiffness_ - spring_damping_ * deltaX[0] * deltaX[0] / (g_dt * normDX * normDX);
-        float bottomRight = -spring_stiffness_ - spring_damping_ * deltaX[1] * deltaX[1] / (g_dt * normDX * normDX);
-        float other = -spring_stiffness_ - spring_damping_ * deltaX[0] * deltaX[1] / (g_dt * normDX * normDX);
+        float topLeft     = -spring_stiffness_ - spring_damping_ * deltaX[0] * deltaX[0] / (time_step_ * normDX * normDX);
+        float bottomRight = -spring_stiffness_ - spring_damping_ * deltaX[1] * deltaX[1] / (time_step_ * normDX * normDX);
+        float other = -spring_stiffness_ - spring_damping_ * deltaX[0] * deltaX[1] / (time_step_ * normDX * normDX);
 
         int i = p0.id;
         solver_.addElementToJacobian(2 * i,     2 * i,      topLeft);
-        solver_.addElementToJacobian(2 * i + 1, 2 * i,      other);
         solver_.addElementToJacobian(2 * i,     2 * i + 1,  other);
+        solver_.addElementToJacobian(2 * i + 1, 2 * i,      other);
         solver_.addElementToJacobian(2 * i + 1, 2 * i + 1,  bottomRight);
     }
 }
@@ -819,28 +816,28 @@ void Mass_spring_viewer::compute_jacobians ()
         if (!(triangle->particle0->locked)) {
           // dFi/dxi
           solver_.addElementToJacobian(2 * i,     2 * i,      -dC_dxi[0] * dArea_dxi[0]);
-          solver_.addElementToJacobian(2 * i + 1, 2 * i,      -dC_dxi[0] * dArea_dxi[1]);
           solver_.addElementToJacobian(2 * i,     2 * i + 1,  -dC_dxi[1] * dArea_dxi[0]);
+          solver_.addElementToJacobian(2 * i + 1, 2 * i,      -dC_dxi[0] * dArea_dxi[1]);
           solver_.addElementToJacobian(2 * i + 1, 2 * i + 1,  -dC_dxi[1] * dArea_dxi[1]);
 
           // dFi/dxj
           solver_.addElementToJacobian(2 * i,     2 * j,      -dC_dxj[0] * dArea_dxi[0]);
-          solver_.addElementToJacobian(2 * i + 1, 2 * j,      -dC_dxj[0] * dArea_dxi[1] - C / 2.0f);
-          solver_.addElementToJacobian(2 * i,     2 * j + 1,  -dC_dxj[1] * dArea_dxi[0] + C / 2.0f);
+          solver_.addElementToJacobian(2 * i,     2 * j + 1,  -dC_dxj[1] * dArea_dxi[0] - C / 2.0f);
+          solver_.addElementToJacobian(2 * i + 1, 2 * j,      -dC_dxj[0] * dArea_dxi[1] + C / 2.0f);
           solver_.addElementToJacobian(2 * i + 1, 2 * j + 1,  -dC_dxj[1] * dArea_dxi[1]);
 
           // dFi/dxk
           solver_.addElementToJacobian(2 * i,     2 * k,      -dC_dxk[0] * dArea_dxi[0]);
-          solver_.addElementToJacobian(2 * i + 1, 2 * k,      -dC_dxk[0] * dArea_dxi[1] + C / 2.0f);
-          solver_.addElementToJacobian(2 * i,     2 * k + 1,  -dC_dxk[1] * dArea_dxi[0] - C / 2.0f);
+          solver_.addElementToJacobian(2 * i,     2 * k + 1,  -dC_dxk[1] * dArea_dxi[0] + C / 2.0f);
+          solver_.addElementToJacobian(2 * i + 1, 2 * k,      -dC_dxk[0] * dArea_dxi[1] - C / 2.0f);
           solver_.addElementToJacobian(2 * i + 1, 2 * k + 1,  -dC_dxk[1] * dArea_dxi[1]);
         }
 
         if (!(triangle->particle1->locked)) {
           // dFj/dxi
           solver_.addElementToJacobian(2 * j,     2 * i,      -dC_dxi[0] * dArea_dxj[0]);
-          solver_.addElementToJacobian(2 * j + 1, 2 * i,      -dC_dxi[0] * dArea_dxj[1] + C / 2.0f);
-          solver_.addElementToJacobian(2 * j,     2 * i + 1,  -dC_dxi[1] * dArea_dxj[0] - C / 2.0f);
+          solver_.addElementToJacobian(2 * j,     2 * i + 1,  -dC_dxi[1] * dArea_dxj[0] + C / 2.0f);
+          solver_.addElementToJacobian(2 * j + 1, 2 * i,      -dC_dxi[0] * dArea_dxj[1] - C / 2.0f);
           solver_.addElementToJacobian(2 * j + 1, 2 * i + 1,  -dC_dxi[1] * dArea_dxj[1]);
 
           // dFj/dxj
@@ -851,22 +848,22 @@ void Mass_spring_viewer::compute_jacobians ()
 
           // dFj/dxk
           solver_.addElementToJacobian(2 * j,     2 * k,      -dC_dxk[0] * dArea_dxj[0]);
-          solver_.addElementToJacobian(2 * j + 1, 2 * k,      -dC_dxk[0] * dArea_dxj[1] - C / 2.0f);
-          solver_.addElementToJacobian(2 * j,     2 * k + 1,  -dC_dxk[1] * dArea_dxj[0] + C / 2.0f);
+          solver_.addElementToJacobian(2 * j,     2 * k + 1,  -dC_dxk[1] * dArea_dxj[0] - C / 2.0f);
+          solver_.addElementToJacobian(2 * j + 1, 2 * k,      -dC_dxk[0] * dArea_dxj[1] + C / 2.0f);
           solver_.addElementToJacobian(2 * j + 1, 2 * k + 1,  -dC_dxk[1] * dArea_dxj[1]);
         }
 
         if (!(triangle->particle2->locked)) {
           // dFk/dxi
           solver_.addElementToJacobian(2 * k,     2 * i,      -dC_dxi[0] * dArea_dxk[0]);
-          solver_.addElementToJacobian(2 * k + 1, 2 * i,      -dC_dxi[0] * dArea_dxk[1] - C / 2.0f);
-          solver_.addElementToJacobian(2 * k,     2 * i + 1,  -dC_dxi[1] * dArea_dxk[0] + C / 2.0f);
+          solver_.addElementToJacobian(2 * k,     2 * i + 1,  -dC_dxi[1] * dArea_dxk[0] - C / 2.0f);
+          solver_.addElementToJacobian(2 * k + 1, 2 * i,      -dC_dxi[0] * dArea_dxk[1] + C / 2.0f);
           solver_.addElementToJacobian(2 * k + 1, 2 * i + 1,  -dC_dxi[1] * dArea_dxk[1]);
 
           // dFk/dxj
           solver_.addElementToJacobian(2 * k,     2 * j,      -dC_dxj[0] * dArea_dxk[0]);
-          solver_.addElementToJacobian(2 * k + 1, 2 * j,      -dC_dxj[0] * dArea_dxk[1] + C / 2.0f);
-          solver_.addElementToJacobian(2 * k,     2 * j + 1,  -dC_dxj[1] * dArea_dxk[0] - C / 2.0f);
+          solver_.addElementToJacobian(2 * k,     2 * j + 1,  -dC_dxj[1] * dArea_dxk[0] + C / 2.0f);
+          solver_.addElementToJacobian(2 * k + 1, 2 * j,      -dC_dxj[0] * dArea_dxk[1] - C / 2.0f);
           solver_.addElementToJacobian(2 * k + 1, 2 * j + 1,  -dC_dxj[1] * dArea_dxk[1]);
 
           // dFk/dxk
