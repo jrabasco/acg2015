@@ -634,6 +634,16 @@ Mass_spring_viewer::compute_forces()
             }
         }
     }
+
+    float kinetic_energy = 0.0f;
+    float potential_energy = 0.0f;
+    for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
+        float speed = norm(particle->velocity);
+        kinetic_energy += particle->mass * speed * speed / 2.0f;
+        potential_energy += particle->mass * (particle->position[1] + 1.0f);
+    }
+
+    std::cout << kinetic_energy << ", " << potential_energy << std::endl;
 }
 
 
