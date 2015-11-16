@@ -16,9 +16,11 @@
 #include "Mass_spring_viewer.h"
 #include "utils/gl_text.h"
 #include <sstream>
+#include <fstream>
+#include <string>
 
 bool equilibrium = false;
-
+bool output = false;
 
 //== IMPLEMENTATION ==========================================================
 
@@ -205,6 +207,12 @@ void Mass_spring_viewer::keyboard(int key, int x, int y)
         case 'e':
         {
             equilibrium = !equilibrium;
+            break;
+        }
+
+        case 'o':
+        {
+            output = !output;
             break;
         }
 
@@ -621,6 +629,7 @@ Mass_spring_viewer::compute_forces()
                     if (p2 != particle) {
                         vec2 dir = particle->position - p2->position;
                         float dist = norm(dir);
+                        dir = dir/dist;
                         particle->force += 0.01 * (dir/(dist * dist));
 
                     }
@@ -629,21 +638,49 @@ Mass_spring_viewer::compute_forces()
                     float A = planes[i][0], B = planes[i][1], C = planes[i][2];
                     vec2 n(A, B);
                     float d = A*particle->position[0] + B*particle->position[1] + C;
-                    particle->force += 0.2 * n / d;
+                    particle->force += 0.1 * n / (d*d);
                 }
             }
         }
     }
 
+    if (output) {
     float kinetic_energy = 0.0f;
     float potential_energy = 0.0f;
+    std::ofstream out;
+    switch (integration_)
+    {
+        case Euler:
+        {
+            out.open("euler.csv", std::ios::app);
+            break;
+        }
+        case Midpoint:
+        {
+            out.open("midpoint.csv", std::ios::app);
+            break;
+        }
+        case Verlet:
+        {
+            out.open("verlet.csv", std::ios::app);
+            break;
+        }
+        case Implicit:
+        {
+            out.open("implicit.csv", std::ios::app);
+            break;
+        }
+    }
+
     for (std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ++particle) {
         float speed = norm(particle->velocity);
         kinetic_energy += particle->mass * speed * speed / 2.0f;
-        potential_energy += particle->mass * (particle->position[1] + 1.0f);
+        potential_energy += particle->mass * (particle->position[1] + 1.0f) * 9.81;
     }
 
-    std::cout << kinetic_energy << ", " << potential_energy << std::endl;
+    out << kinetic_energy << "\n";
+    out.close();
+    }
 }
 
 
