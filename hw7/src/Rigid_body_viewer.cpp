@@ -204,12 +204,33 @@ void Rigid_body_viewer::compute_forces()
      \li add gravity
      \li add damping to linear and angular movement
      \li add the mouse spring force
-     */
+     */ 
 
-    body_.force = vec2(0, -body_.mass * 9.81f);
+    body_.force = vec2(0.0f, 0.0f);
+    body_.torque = 0.0f;
 
+    // Gravity
+    body_.force -= body_.mass * vec2(0, 9.81f);
+
+    // Damping
     body_.force -= body_.linear_velocity * damping_linear_;
     body_.torque -= body_.angular_velocity * damping_angular_;
+
+    // Mouse spring
+    if (mouse_spring_.active) {
+        assert(mouse_spring_.particle_index < body_.points.size());
+        vec2 point = body_.points[mouse_spring_.particle_index];
+        vec2 deltaPos = point - mouse_spring_.mouse_position;
+        float deltaPosNorm = norm(deltaPos);
+        vec2 unitDeltaPos = deltaPos / deltaPosNorm;
+
+        vec2 spring_force = -(spring_stiffness_ * deltaPosNorm + spring_damping_ * dot(body_.linear_velocity, deltaPos) / deltaPosNorm) * unitDeltaPos;
+
+        body_.force += spring_force;
+
+        vec2 ri = body_.r[mouse_spring_.particle_index];
+        body_.torque += dot(spring_force, vec2(ri[1], -ri[0]));
+    }
 }
 
 
