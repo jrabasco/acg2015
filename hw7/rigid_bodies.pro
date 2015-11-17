@@ -27,6 +27,7 @@ unix:macx {
     QMAKE_LFLAGS += -framework GLUT
     QMAKE_LFLAGS += -framework opengl
     QMAKE_CXXFLAGS += -Wno-deprecated-declarations
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
 }
 unix:!macx {
     LIBS += -lGL -lGLU -lglut

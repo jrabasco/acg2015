@@ -205,6 +205,11 @@ void Rigid_body_viewer::compute_forces()
      \li add damping to linear and angular movement
      \li add the mouse spring force
      */
+
+    body_.force = vec2(0, -body_.mass * 9.81f);
+
+    body_.force -= body_.linear_velocity * damping_linear_;
+    body_.torque -= body_.angular_velocity * damping_angular_;
 }
 
 
@@ -231,6 +236,15 @@ void Rigid_body_viewer::time_integration(float dt)
      \li update linear and angular velocities
      \li call update_points() at the end to compute the new particle positions
      */
+
+    body_.position += dt * body_.linear_velocity;
+    body_.orientation += dt * body_.angular_velocity;
+
+    body_.linear_velocity += dt * body_.force / body_.mass;
+    body_.angular_velocity += dt * body_.torque / body_.inertia;
+
+    body_.update_points();
+
     // handle collisions
     impulse_based_collisions();
 }
