@@ -212,6 +212,7 @@ void Rigid_body_viewer::compute_forces()
     // Gravity
     body_.force -= body_.mass * vec2(0, 9.81f);
 
+
     // Damping
     body_.force -= body_.linear_velocity * damping_linear_;
     body_.torque -= body_.angular_velocity * damping_angular_;
@@ -241,6 +242,41 @@ void Rigid_body_viewer::impulse_based_collisions()
 {
     /** \todo Handle collisions based on impulses
      */
+
+     const float epsilon = 1.0f;
+     const float planes[4][3] = {
+        {  0.0,  1.0, 1.0 },
+        {  0.0, -1.0, 1.0 },
+        {  1.0,  0.0, 1.0 },
+        { -1.0,  0.0, 1.0 }
+    };
+
+    std::vector<vec2>& points = body_.points;
+
+    for (int i = 0; i < 4; ++i) {
+        const float A = planes[i][0], B = planes[i][1], C = planes[i][2];
+
+        for (std::vector<vec2>::iterator point = points.begin(); point != points.end(); ++point) {
+            // Detect collision
+            float distance = A * (*point)[0] + B * (*point)[1] + C;
+            vec2 n(A, B);
+            vec2 r = body_.r[point - points.begin()];
+            vec2 rp(r[1], -r[0]);
+            float v_rel = dot(n, body_.linear_velocity + body_.angular_velocity * rp);
+
+            // Change velocity if it collides
+            if (distance < 0 && v_rel < 0) {
+                std::cout << time(NULL) << "COLLISSSSIIIIIOOONNNN!" << std::endl;
+
+                float rp_dot_n = dot(n, rp);
+                float j = -(1.0f + epsilon) * v_rel / (1.0f / body_.mass + (rp_dot_n * rp_dot_n) / body_.inertia);
+                vec2 J = j * n;
+
+                body_.linear_velocity += J / body_.mass;
+                body_.angular_velocity += dot(rp, J) / body_.inertia;
+            }
+        }
+    }
 }
 
 
