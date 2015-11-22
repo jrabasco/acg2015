@@ -22,6 +22,7 @@
 *.out
 *.app
 
+*build-rigid_bodies*
 *build-nori*
 *build-acg-physics*
 *.log

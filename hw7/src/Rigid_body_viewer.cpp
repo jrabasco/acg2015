@@ -219,7 +219,8 @@ void Rigid_body_viewer::compute_forces()
 
     // Mouse spring
     if (mouse_spring_.active) {
-        assert(mouse_spring_.particle_index < body_.points.size());
+        assert(mouse_spring_.particle_index >= 0);
+        assert((size_t) mouse_spring_.particle_index < body_.points.size());
         vec2 point = body_.points[mouse_spring_.particle_index];
         vec2 deltaPos = point - mouse_spring_.mouse_position;
         float deltaPosNorm = norm(deltaPos);
@@ -243,7 +244,7 @@ void Rigid_body_viewer::impulse_based_collisions()
     /** \todo Handle collisions based on impulses
      */
 
-     const float epsilon = 1.0f;
+     const float epsilon = 0.9f;
      const float planes[4][3] = {
         {  0.0,  1.0, 1.0 },
         {  0.0, -1.0, 1.0 },
@@ -266,8 +267,6 @@ void Rigid_body_viewer::impulse_based_collisions()
 
             // Change velocity if it collides
             if (distance < 0 && v_rel < 0) {
-                //std::cout << time(NULL) << "COLLISSSSIIIIIOOONNNN!" << std::endl;
-
                 float rp_dot_n = dot(n, rp);
                 float j = -(1.0f + epsilon) * v_rel / (1.0f / body_.mass + (rp_dot_n * rp_dot_n) / body_.inertia);
                 vec2 J = j * n;
