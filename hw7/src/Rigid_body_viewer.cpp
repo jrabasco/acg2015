@@ -231,7 +231,7 @@ void Rigid_body_viewer::compute_forces()
         vec2 spring_force = -(spring_stiffness_ * deltaPosNorm + spring_damping_ * dot(vi, deltaPos) / deltaPosNorm) * unitDeltaPos;
 
         body_.force += spring_force;
-        body_.torque += dot(spring_force, vec2(ri[1], -ri[0]));
+        body_.torque += dot(spring_force, perp(ri));
     }
 }
 
@@ -262,7 +262,7 @@ void Rigid_body_viewer::impulse_based_collisions()
             float distance = A * (*point)[0] + B * (*point)[1] + C;
             vec2 n(A, B);
             vec2 r = *point - body_.position;
-            vec2 rp(r[1], -r[0]);
+            vec2 rp = perp(r);
             float v_rel = dot(n, body_.linear_velocity + body_.angular_velocity * rp);
 
             // Change velocity if it collides
