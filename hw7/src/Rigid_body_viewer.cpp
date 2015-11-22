@@ -225,11 +225,11 @@ void Rigid_body_viewer::compute_forces()
         float deltaPosNorm = norm(deltaPos);
         vec2 unitDeltaPos = deltaPos / deltaPosNorm;
 
-        vec2 spring_force = -(spring_stiffness_ * deltaPosNorm + spring_damping_ * dot(body_.linear_velocity, deltaPos) / deltaPosNorm) * unitDeltaPos;
+        vec2 ri = point - body_.position;
+        vec2 vi = body_.linear_velocity + perp(ri) * body_.angular_velocity;
+        vec2 spring_force = -(spring_stiffness_ * deltaPosNorm + spring_damping_ * dot(vi, deltaPos) / deltaPosNorm) * unitDeltaPos;
 
         body_.force += spring_force;
-
-        vec2 ri = body_.r[mouse_spring_.particle_index];
         body_.torque += dot(spring_force, vec2(ri[1], -ri[0]));
     }
 }
@@ -260,13 +260,13 @@ void Rigid_body_viewer::impulse_based_collisions()
             // Detect collision
             float distance = A * (*point)[0] + B * (*point)[1] + C;
             vec2 n(A, B);
-            vec2 r = body_.r[point - points.begin()];
+            vec2 r = *point - body_.position;
             vec2 rp(r[1], -r[0]);
             float v_rel = dot(n, body_.linear_velocity + body_.angular_velocity * rp);
 
             // Change velocity if it collides
             if (distance < 0 && v_rel < 0) {
-                std::cout << time(NULL) << "COLLISSSSIIIIIOOONNNN!" << std::endl;
+                //std::cout << time(NULL) << "COLLISSSSIIIIIOOONNNN!" << std::endl;
 
                 float rp_dot_n = dot(n, rp);
                 float j = -(1.0f + epsilon) * v_rel / (1.0f / body_.mass + (rp_dot_n * rp_dot_n) / body_.inertia);
